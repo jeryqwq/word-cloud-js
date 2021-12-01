@@ -13,38 +13,53 @@ declare type Config = {
   font?: "sans-serif",
   renderFn?: (item: WordItemAfter) => HTMLElement
 }
-declare type DataItem = Array<{ value: number, name: string }>
+declare type DataItem = { value: number, name: string }
+declare type OptionData = Array<DataItem>
 declare type Options = {
   el: any,
-  data: DataItem,
+  data: OptionData ,
   config?: Config
 }
 class WordChart{
-  value: Array<DataItem>;
-  composFn?: (_: Array<DataItem>) => Array<DataItem>;
+  value:   OptionData;
+  composFn?: (_: DataItem, idx: number) => DataItem;
+  effectComposFn?: (_: DataItem, idx: number) => void;
   el: HTMLElement;
-  getFontSize: (val: number) => number
+  getSize: (val: number) => number
+  sortValue:  OptionData;
   private constructor( options: Options ) {
     this.el = options.el
-    this.value = []
-    this.getFontSize = rangMapping([0, 1], [1, 100])
+    this.value = options.data
+    this.sortValue = options.data.sort((a,b) => (a.value - b.value) > 0 ? 1 : -1)
+    this.getSize = rangMapping([0, 1], [this.sortValue[0].value, this.sortValue[this.sortValue.length - 1].value])
   }
   getValue(_: number): number {
-    return this.getFontSize(_)
+    return this.getSize(_)
   }
   trigger() {
-    this.value = this.composFn && this.composFn(this.value)  as Array<DataItem> 
+    this.value = this.value.map((i, index) => {
+      this.effectComposFn && this.effectComposFn(i, index)
+      return this.composFn ? this.composFn(i, index) : i
+    })
     return this
   }
-  scan(fn: (_: Array<DataItem>) => Array<DataItem>){
-    this.composFn = compos(this.composFn, fn)
-    // this.queue.push(() => {
-    //   this.value = fn(this.value || init)
-    //   return this.value
-    // })
+  scan(fn: (_: DataItem, idx: number) => DataItem): WordChart{
+    if(this.composFn) {
+      this.composFn = compos<DataItem>(this.composFn, fn)
+    }else{
+      this.composFn = fn
+    }
     return this
   }
-  static of(config: Options) {
+  effect(fn: (_:DataItem, idx: number) => void): WordChart{
+    if(this.effectComposFn) { // 多个函数使用compos去组合
+      this.effectComposFn = compos<DataItem>(this.effectComposFn, fn)
+    }else{ 
+      this.effectComposFn = fn
+    }
+    return this
+  }
+  static of(config: Options): WordChart{
     return new WordChart(config)
   }
 }
@@ -58,8 +73,17 @@ for (let index = 0; index < 100; index++) {
 const instance = WordChart.of({
   el: document.body,
   data: temp
-}).scan(val => {
-  console.log(val)
-  return val
+}).scan((val:DataItem)=> {
+  return {
+    ...val,
+    name: '--' + val.name
+  }
+}).scan((val:DataItem)=> {
+  return {
+    ...val,
+    name: val.name + '--'
+  }
+}).effect((item) => {
+  console.log(item)
 }).trigger()
 console.log(instance)
