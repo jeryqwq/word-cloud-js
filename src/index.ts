@@ -1,29 +1,10 @@
 import { compos, rangMapping } from './helper/index'
-declare type WordItemAfter = {
-  per: number,
-  text: string
-}
-declare type Config = {
-  trace?: true,
-  spiralResolution?: 1, //Lower = better resolution
-  spiralLimit?: number,
-  lineHeight?: 0.8,
-  xWordPadding?: 0,
-  yWordPadding?: 3,
-  font?: "sans-serif",
-  renderFn?: (item: WordItemAfter) => HTMLElement
-}
-declare type DataItem = { value: number, name: string }
-declare type OptionData = Array<DataItem>
-declare type Options = {
-  el: any,
-  data: OptionData ,
-  config?: Config
-}
-class WordChart{
+import { renderItem } from './renderEl';
+
+class WordChart {
   value:   OptionData;
-  composFn?: (_: DataItem, idx: number) => DataItem;
-  effectComposFn?: (_: DataItem, idx: number) => void;
+  composFn?: (_: ScanItemType) => DataItem;
+  effectComposFn?: (_: ScanItemType) => void;
   el: HTMLElement;
   getSize: (val: number) => number
   sortValue:  OptionData;
@@ -38,23 +19,23 @@ class WordChart{
   }
   trigger() {
     this.value = this.value.map((i, index) => {
-      this.effectComposFn && this.effectComposFn(i, index)
-      return this.composFn ? this.composFn(i, index) : i
+      this.effectComposFn && this.effectComposFn({item: i, index, instance: this})
+      return this.composFn ? this.composFn({item: i, index: index, instance: this}) : i
     })
     return this
   }
-  scan(fn: (_: DataItem, idx: number) => DataItem): WordChart{
+  scan(fn: (_: ScanItemType) => DataItem): WordChart{
     if(this.composFn) {
-      this.composFn = compos<DataItem>(this.composFn, fn)
+      this.composFn = compos<DataItem, ScanItemType>(this.composFn, fn)
     }else{
       this.composFn = fn
     }
     return this
   }
-  effect(fn: (_:DataItem, idx: number) => void): WordChart{
+  effect(fn: (_: ScanItemType) => void): WordChart{
     if(this.effectComposFn) { // 多个函数使用compos去组合
-      this.effectComposFn = compos<DataItem>(this.effectComposFn, fn)
-    }else{ 
+      this.effectComposFn = compos<DataItem, ScanItemType>(this.effectComposFn, fn)
+    }else{
       this.effectComposFn = fn
     }
     return this
@@ -73,17 +54,22 @@ for (let index = 0; index < 100; index++) {
 const instance = WordChart.of({
   el: document.body,
   data: temp
-}).scan((val:DataItem)=> {
+})
+.scan(({item, index, instance}) =>  { // 一层一层的返回扫描后的结果
+  renderItem(item, instance)
   return {
-    ...val,
-    name: '--' + val.name
+    ...item,
+    name: '--' + item.name,
+    test: 'add str'
   }
-}).scan((val:DataItem)=> {
+}).scan((item: any)=> {
+  console.log(item, '--scan 2')
   return {
-    ...val,
-    name: val.name + '--'
+    ...item,
+    name: item.name + '--'
   }
-}).effect((item) => {
+})
+.effect(({item}) => { // 异步
   console.log(item)
 }).trigger()
 console.log(instance)
