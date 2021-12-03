@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>3D词云</title>
+  <style>
+    .wordCloud__tagBall {
+      margin: 50px auto;
+      position: relative;
+    }
+
+    .wordCloud__tag {
+      display: block;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      color: green;
+      text-decoration: none;
+      font-size: 15px;
+      font-family: '微软雅黑';
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .wordCloud__tag:hover {
+      color: red !important;
+    }
+
+    .wordCloud__home {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="main">
+    <div class="wordCloud__tagBall" style="width: 500px; height: 500px ">
+    </div>
+    <div class="wordCloud__home">
+      <button class="btn0" type="button">降低速度</button>
+      <button class="btn1" type="button">横向顺时针</button>
+      <button class="btn2" type="button">横向逆时针</button>
+      <button class="btn3" type="button">纵向顺时针</button>
+      <button class="btn4" type="button">纵向逆时针</button>
+      <button class="btn5" type="button">增加速度</button>
+    </div>
+  </div>
+  <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/jquery/1.11.0/jquery.js"></script>
+  <script>
+    $(function () {
+      var myval
+      var width = 500
+      var height = 500
+      var contentEle = []
+      var data = ['云图', '是个啥', '他啥都不是', '他就是词云']
+      var direction = '-1'
+      var speed = 3000
+      var color = ['#2D4DB6', '#04B67C', '#D1AF07', '#E27914', '#CB4A4D', '#B02690']
+      function innit() {
+        const RADIUSX = (width - 50) / 2
+        const RADIUSY = (height - 50) / 2
+        contentEle = []
+        for (let i = 0; i < data.length; i += 1) {
+          const k = -1 + (2 * (i + 1) - 1) / data.length
+          const a = Math.acos(k)
+          const b = a * Math.sqrt(data.length * Math.PI)
+          const x = RADIUSX * Math.sin(a) * Math.cos(b)
+          const y = RADIUSY * Math.sin(a) * Math.sin(b)
+          const z = RADIUSX * Math.cos(a)
+          const singleEle = {
+            x,
+            y,
+            z,
+            style: {},
+          }
+          contentEle.push(singleEle)
+        }
+        animate()
+      }
+      function animate() {
+        rotateX()
+        rotateY()
+        move()
+        // window.requestAnimationFrame(animate)
+      }
+      function rotateX() {
+        const angleX = ['-1', '1'].includes(direction)
+          ? Math.PI / Infinity
+          : Math.PI / ((Number(direction) / 2) * Number(speed))
+        const cos = Math.cos(angleX)
+        const sin = Math.sin(angleX)
+        contentEle = contentEle.map((t) => {
+          const y1 = t.y * cos - t.z * sin
+          const z1 = t.z * cos + t.y * sin
+          return {
+            ...t,
+            y: y1,
+            z: z1,
+          }
+        })
+      }
+      function rotateY() {
+        const angleY = ['-2', '2'].includes(direction)
+          ? Math.PI / Infinity
+          : Math.PI / (Number(direction) * Number(speed))
+        const cos = Math.cos(angleY)
+        const sin = Math.sin(angleY)
+        contentEle = contentEle.map((t) => {
+          const x1 = t.x * cos - t.z * sin
+          const z1 = t.z * cos + t.x * sin
+          return {
+            ...t,
+            x: x1,
+            z: z1,
+          }
+        })
+      }
+      function move() {
+        const CX = width / 2
+        const CY = height / 2
+        contentEle = contentEle.map((singleEle) => {
+          const { x, y, z } = singleEle
+          const fallLength = 500
+          const RADIUS = (width - 50) / 2
+          const scale = fallLength / (fallLength - z)
+          const alpha = (z + RADIUS) / (2 * RADIUS)
+          const left = `${x + CX - 15}px`
+          const top = `${y + CY - 15}px`
+          const transform = `translate(${left}, ${top}) scale(${scale})`
+          const style = {
+            ...singleEle.style,
+            opacity: alpha + 0.5,
+            zIndex: parseInt(scale * 100, 10),
+            transform,
+          }
+          return {
+            x,
+            y,
+            z,
+            style,
+          }
+        })
+      }
+      function handleRotate(value) {
+        direction = value
+      }
+      function handleSpeed(value) {
+        const speedObj = {
+          fast: -50,
+          slow: 50,
+        }
+        speed += speedObj[value]
+        if (speed === 0) {
+          speed = 50
+        }
+      }
+      function init() {
+        var html_ = ''
+        for (var i = 0; i < data.length; i++) {
+          let color_ = color[i % color.length]
+          html_ += '<span class="wordCloud__tag" style="color:' + color_ + ';opacity:' + contentEle[i].style.opacity + ';transform:' + contentEle[i].style.transform + ';zIndex:' + contentEle[i].style.zIndex + '">' + data[i] + '</span>'
+        }
+        $('.wordCloud__tagBall').html(html_)
+      }
+
+      innit()
+      myval = setInterval(() => {
+        init()
+      }, 10000)
+
+      //横向顺时针
+      $('.btn1').on('click', function () {
+        handleRotate('-1')
+      })
+      //横向逆时针
+      $('.btn2').on('click', function () {
+        handleRotate('1')
+      })
+      //纵向顺时针
+      $('.btn3').on('click', function () {
+        handleRotate('-2')
+      })
+      //纵向逆时针
+      $('.btn4').on('click', function () {
+        handleRotate('2')
+      })
+      //增加速度
+      $('.btn5').on('click', function () {
+        handleSpeed('fast')
+      })
+      //增加速度
+      $('.btn0').on('click', function () {
+        handleSpeed('slow')
+      })
+
+      $('.wordCloud__tagBall').on('mouseenter', function () {
+        clearInterval(myval)
+      })
+      $('.wordCloud__tagBall').on('mouseleave', function () {
+         myval = setInterval(() => {
+          init()
+        }, 10000)
+      })
+      $('body').on('click', 'span', function () {
+        console.log($(this)[0].innerHTML);
+      })
+    })
+  </script>
+</body>
+
+</html>

@@ -13,6 +13,18 @@ export const rangMapping = function (from: Input, to: Input): (val: number) => n
     if(val < min) return to[0] // 极限最小
     if(val > max) return to[1] // 最大
     const interval = from[1] - from[0]
-    return (to[1] - to[0])/interval * val
+    return (to[1] - to[0])/interval * val + to[0]
+  }
+}
+export const throttle = function (fn: Function, ms: number) {
+  let prev = new Date().getTime()
+  return function (...args: []) {
+    const cur = new Date().getTime()
+    if(prev - cur >= ms) {
+      fn && fn(...args)
+      prev = new Date().getTime()
+    }else{
+      // prev = new Date().getTime()
+    }
   }
 }

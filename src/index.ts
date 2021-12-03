@@ -1,21 +1,25 @@
-import { compos, rangMapping } from './helper/index'
+import { compos, rangMapping } from './helper/utils'
 import { renderItem } from './renderEl';
 
 class WordChart {
-  value:   OptionData;
+  value: OptionData;
   composFn?: (_: ScanItemType) => DataItem;
   effectComposFn?: (_: ScanItemType) => void;
   el: HTMLElement;
-  getSize: (val: number) => number
-  sortValue:  OptionData;
+  getValue: (val: number) => number
+  sortValue: OptionData;
+  maxValue: number;
+  elRect: DOMRect;
+  ra
   private constructor( options: Options ) {
     this.el = options.el
-    this.value = options.data
-    this.sortValue = options.data.sort((a,b) => (a.value - b.value) > 0 ? 1 : -1)
-    this.getSize = rangMapping([0, 1], [this.sortValue[0].value, this.sortValue[this.sortValue.length - 1].value])
-  }
-  getValue(_: number): number {
-    return this.getSize(_)
+    this.value = options.data.map(i => i) // clone
+    this.sortValue = options.data.sort((a,b) => (a.value - b.value) > 0 ? 1 : -1) // muttable
+    this.maxValue = this.sortValue[this.sortValue.length - 1].value
+    this.elRect = this.el.getBoundingClientRect()
+    this.RADIUSX =0
+    this.RADIUSY = 0
+    this.getValue = rangMapping([0, 1], [12, 24])
   }
   trigger() {
     this.value = this.value.map((i, index) => {
@@ -52,24 +56,25 @@ for (let index = 0; index < 100; index++) {
   })
 }
 const instance = WordChart.of({
-  el: document.body,
+  el: document.querySelector('#app'),
   data: temp
 })
 .scan(({item, index, instance}) =>  { // 一层一层的返回扫描后的结果
-  renderItem(item, instance)
+  const props = renderItem(item, index, instance)
   return {
     ...item,
     name: '--' + item.name,
-    test: 'add str'
+    test: 'add str',
+    ...props
   }
 }).scan((item: any)=> {
-  console.log(item, '--scan 2')
+  // console.log(item, '--scan 2')
   return {
     ...item,
     name: item.name + '--'
   }
 })
 .effect(({item}) => { // 异步
-  console.log(item)
+  // console.log(item)
 }).trigger()
 console.log(instance)

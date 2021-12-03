@@ -24,9 +24,7 @@ interface WordChart {
   getValue: (_: number) => number,
   el: HTMLElement;
   value:   OptionData;
-  composFn?: (_: ScanItemType) => DataItem;
-  effectComposFn?: (_: ScanItemType) => void;
-  el: HTMLElement;
-  getSize: (val: number) => number
   sortValue:  OptionData;
+  maxValue: number;
+  elRect: DOMRect
 }
