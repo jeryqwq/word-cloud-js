@@ -15,8 +15,6 @@ export const renderItem = function(item: DataItem, index: number, instance: Word
     z,
     style: {},
   }
-  console.log(singleEle)
-  const rect = el.getBoundingClientRect()
   el.appendChild(itemEl)
   const per = item.value / instance.maxValue
   const mappingVal = Math.floor(getValue(per))

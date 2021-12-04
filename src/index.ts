@@ -88,9 +88,7 @@ const instance = WordChart.of(config)
     ...props
   }
 }).scan((item: any)=> {
-  // console.log(item, '--scan 2')
-  // const { el, x, y} = item
-  // el.style.transform = `translate(${x}px, ${y}px)`
+
   return {
     ...item
   }
@@ -102,7 +100,7 @@ const instance = WordChart.of(config)
     el.style.transform = transform
   })
 })
-.effect(({item, index, instance}) => { // 异步
+.effect(({item, index, instance}) => { // 副作用
   setInterval(() => {
     const {z, y} = rotateX(item as MappingDataItem, instance)
     item.z = z 
@@ -110,6 +108,6 @@ const instance = WordChart.of(config)
     const { x, z: z1 } = rotateY(item as MappingDataItem, instance)
     item.z = z1
     item.x = x
-  }, 100)
+  }, 200)
 }).trigger()
 console.log(instance)

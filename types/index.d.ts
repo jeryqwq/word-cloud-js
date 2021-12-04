@@ -13,7 +13,9 @@ declare type Config = {
   renderFn?: (item: WordItemAfter) => HTMLElement
   speed?: number
 }
-declare type DataItem = { value: number, name: string }
+declare type DataItem = { value: number, name: string ,  x?: number,
+  y?: number,
+  z?: number,}
 declare type OptionData = Array<DataItem>
 declare type ScanItemType = {item: DataItem, index: number, instance: WordChart}
 declare type Options = {
