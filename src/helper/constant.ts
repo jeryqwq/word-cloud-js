@@ -1,0 +1,6 @@
+export const DIRECTION = {
+  RIGHT2LEFT: 1,
+  LEFT2RIGHT: -1,
+  TOP2BOTTOM: 2,
+  BOTTOM2TOP: -2
+}

@@ -1,6 +1,7 @@
-import { compos, rangMapping } from './helper/utils'
+import { compos, rangMapping, throttle } from './helper/utils'
 import { renderItem } from './renderEl';
-
+import {DIRECTION} from './helper/constant'
+import { rotateY, rotateX, move } from './helper/animate'
 class WordChart {
   value: OptionData;
   composFn?: (_: ScanItemType) => DataItem;
@@ -10,22 +11,42 @@ class WordChart {
   sortValue: OptionData;
   maxValue: number;
   elRect: DOMRect;
-  ra
+  RADIUSX: number;
+  RADIUSY: number;
+  DIRECTION: number
+  config: Config
+  speed: number
   private constructor( options: Options ) {
     this.el = options.el
-    this.value = options.data.map(i => i) // clone
+    this.value = [...options.data] // clone
     this.sortValue = options.data.sort((a,b) => (a.value - b.value) > 0 ? 1 : -1) // muttable
     this.maxValue = this.sortValue[this.sortValue.length - 1].value
     this.elRect = this.el.getBoundingClientRect()
-    this.RADIUSX =0
-    this.RADIUSY = 0
-    this.getValue = rangMapping([0, 1], [12, 24])
+    const { width, height } = this.elRect
+    this.RADIUSX = (width - 50) / 2
+    this.RADIUSY = (height - 50) / 2
+    this.DIRECTION = DIRECTION.LEFT2RIGHT
+    this.config = options.config || {}
+    this.speed = this.config.speed || 50
+    this.getValue = rangMapping([0, 1], this.config.fontSizeRange || [12, 24])
   }
   trigger() {
-    this.value = this.value.map((i, index) => {
-      this.effectComposFn && this.effectComposFn({item: i, index, instance: this})
-      return this.composFn ? this.composFn({item: i, index: index, instance: this}) : i
-    })
+    this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
+    this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
+    return this
+  }
+  animate(fn: (_: OptionData, __: WordChart) => void):WordChart {
+    const that = this
+    let cur = new Date().getTime()
+    void function run(){
+      window.requestAnimationFrame(() => {
+        if(new Date().getTime() - cur >= 200) {
+          fn(that.value, that)
+          cur = new Date().getTime()
+        }
+        run()
+      })
+    }()
     return this
   }
   scan(fn: (_: ScanItemType) => DataItem): WordChart{
@@ -49,32 +70,46 @@ class WordChart {
   }
 }
 const temp = []
-for (let index = 0; index < 100; index++) {
+for (let index = 0; index < 30; index++) {
   temp.push({
     value: Math.floor(Math.random() * 1000),
     name: `test-${index}`
   })
 }
-const instance = WordChart.of({
+const config = {
   el: document.querySelector('#app'),
-  data: temp
-})
+  data: temp,
+}
+const instance = WordChart.of(config)
 .scan(({item, index, instance}) =>  { // 一层一层的返回扫描后的结果
-  const props = renderItem(item, index, instance)
+  const props = renderItem(item, index, instance)  // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
   return {
     ...item,
-    name: '--' + item.name,
-    test: 'add str',
     ...props
   }
 }).scan((item: any)=> {
   // console.log(item, '--scan 2')
+  // const { el, x, y} = item
+  // el.style.transform = `translate(${x}px, ${y}px)`
   return {
-    ...item,
-    name: item.name + '--'
+    ...item
   }
 })
-.effect(({item}) => { // 异步
-  // console.log(item)
+.animate((tempArr, instance) => {
+  tempArr.forEach(i => {
+    const { el } = i as MappingDataItem
+    const { transform} = move(i as MappingDataItem , instance)
+    el.style.transform = transform
+  })
+})
+.effect(({item, index, instance}) => { // 异步
+  setInterval(() => {
+    const {z, y} = rotateX(item as MappingDataItem, instance)
+    item.z = z 
+    item.y = y
+    const { x, z: z1 } = rotateY(item as MappingDataItem, instance)
+    item.z = z1
+    item.x = x
+  }, 100)
 }).trigger()
 console.log(instance)

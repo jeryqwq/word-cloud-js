@@ -83,7 +83,7 @@
         rotateX()
         rotateY()
         move()
-        // window.requestAnimationFrame(animate)
+        window.requestAnimationFrame(animate)
       }
       function rotateX() {
         const angleX = ['-1', '1'].includes(direction)
@@ -168,7 +168,7 @@
       innit()
       myval = setInterval(() => {
         init()
-      }, 10000)
+      }, 100)
 
       //横向顺时针
       $('.btn1').on('click', function () {
