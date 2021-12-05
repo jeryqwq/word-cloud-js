@@ -2,10 +2,12 @@
   "name": "word-cloud-chart",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "typings": "types/index.d.ts",
   "scripts": {
     "dev": "rimraf dist && tsc && rollup -c rollup.config.js --watch",
-    "clean": "rm -rf build"
+    "clean": "rm -rf build",
+    "test": "jest --env=node --colors --coverage test"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +15,6 @@
   "devDependencies": {
     "@open-wc/building-rollup": "^2.0.1",
     "@rollup/plugin-typescript": "^8.3.0",
-    "deepmerge": "^4.2.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.60.2",
     "rollup-plugin-livereload": "^2.0.5",
