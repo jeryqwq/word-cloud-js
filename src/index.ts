@@ -6,6 +6,7 @@ class WordChart {
   value: OptionData;
   composFn?: (_: ScanItemType) => DataItem;
   effectComposFn?: (_: ScanItemType) => void;
+  animateComposFn?:(_: OptionData) => void;
   el: HTMLElement;
   getValue: (val: number) => number
   sortValue: OptionData;
@@ -27,26 +28,34 @@ class WordChart {
     this.RADIUSY = (height - 50) / 2
     this.DIRECTION = DIRECTION.LEFT2RIGHT
     this.config = options.config || {}
-    this.speed = this.config.speed || 50
+    this.speed = this.config.speed || 200
     this.getValue = rangMapping([0, 1], this.config.fontSizeRange || [12, 24])
   }
   trigger() {
     this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
     this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
+    this.animateComposFn && this.animateComposFn(this.value)
     return this
   }
-  animate(fn: (_: OptionData, __: WordChart) => void):WordChart {
+  animate(fn: (_: OptionData) => void, ms: number):WordChart {
     const that = this
-    let cur = new Date().getTime()
-    void function run(){
-      window.requestAnimationFrame(() => {
-        if(new Date().getTime() - cur >= 200) {
-          fn(that.value, that)
-          cur = new Date().getTime()
-        }
-        run()
-      })
-    }()
+    const wrap = function(){
+      let cur = new Date().getTime()
+      void function run(){
+        window.requestAnimationFrame(() => {
+          if(new Date().getTime() - cur >= ms) {
+            fn(that.value)
+            cur = new Date().getTime()
+          }
+          run()
+        })
+      }()
+    }
+    if(this.animateComposFn) {
+      this.animateComposFn = compos<DataItem, OptionData>(this.animateComposFn, wrap)
+    }else{
+      this.animateComposFn = wrap
+    }
     return this
   }
   scan(fn: (_: ScanItemType) => DataItem): WordChart{
@@ -80,34 +89,32 @@ const config = {
   el: document.querySelector('#app'),
   data: temp,
 }
-const instance = WordChart.of(config)
-.scan(({item, index, instance}) =>  { // 一层一层的返回扫描后的结果
-  const props = renderItem(item, index, instance)  // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
-  return {
-    ...item,
-    ...props
-  }
-}).scan((item: any)=> {
-
-  return {
-    ...item
-  }
-})
-.animate((tempArr, instance) => {
+const instance = WordChart.of(config)  // 类实例
+instance.scan(({item, index, instance}) => ({   // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
+  ...item,
+  ...renderItem(item, index, instance)
+}))
+.animate((tempArr) => {
   tempArr.forEach(i => {
     const { el } = i as MappingDataItem
-    const { transform} = move(i as MappingDataItem , instance)
+    const { transform, opacity, zIndex} = move(i as MappingDataItem , instance)
     el.style.transform = transform
+    el.style.opacity = opacity + ''
+    el.style.zIndex = zIndex + ''
   })
-})
-.effect(({item, index, instance}) => { // 副作用
-  setInterval(() => {
+}, 20) //高刷屏默认触发间隔 120hz > 60hz > 30hz, 防止在高配或者低配电脑上requestAnimateFrame表现不一致，手动配置一个间隔，
+.animate((tempArr) => { // 副作用
+  tempArr.forEach(item => {
     const {z, y} = rotateX(item as MappingDataItem, instance)
     item.z = z 
     item.y = y
     const { x, z: z1 } = rotateY(item as MappingDataItem, instance)
     item.z = z1
     item.x = x
-  }, 200)
-}).trigger()
+  })
+}, 20).trigger()
 console.log(instance)
+
+// export const render = function (options: Options) {
+
+// }
