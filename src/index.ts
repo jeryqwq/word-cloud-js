@@ -39,14 +39,11 @@ class WordChart {
   }
   animate(fn: (_: OptionData) => void, ms: number):WordChart {
     const that = this
+    const throttledFn = throttle(fn, ms)
     const wrap = function(){
-      let cur = new Date().getTime()
       void function run(){
         window.requestAnimationFrame(() => {
-          if(new Date().getTime() - cur >= ms) {
-            fn(that.value)
-            cur = new Date().getTime()
-          }
+          throttledFn(that.value)
           run()
         })
       }()
@@ -125,7 +122,7 @@ instance.scan(({item, index, instance}) => {
   const { getValue } = instance
   const per = item.value / instance.maxValue
   const mappingVal = Math.floor(getValue(per))
-  item.el.style.fontSize = mappingVal + 'px'
+  item.el && (item.el.style.fontSize = mappingVal + 'px')
 })
 .trigger()
 console.log(instance)

@@ -18,9 +18,9 @@ export const rangMapping = function (from: Input, to: Input): (val: number) => n
 }
 export const throttle = function (fn: Function, ms: number) {
   let prev = new Date().getTime()
-  return function (...args: []) {
+  return function (...args: Array<any>) {
     const cur = new Date().getTime()
-    if(prev - cur >= ms) {
+    if(cur - prev >= ms) {
       fn && fn(...args)
       prev = new Date().getTime()
     }else{

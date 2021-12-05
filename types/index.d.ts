@@ -15,7 +15,9 @@ declare type Config = {
 }
 declare type DataItem = { value: number, name: string ,  x?: number,
   y?: number,
-  z?: number,}
+  z?: number,
+  el?: HTMLElement
+}
 declare type OptionData = Array<DataItem>
 declare type ScanItemType = {item: DataItem, index: number, instance: WordChart}
 declare type Options = {
