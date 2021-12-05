@@ -1,7 +1,32 @@
 ##  3D词云图
 ### 纯js开发，无任何第三方依赖
-### 基于函数式编程，可在原基础上追加自己的业务
+### 基于函数式编程，可在原库上追加自己的业务
 ### 扩展性强，可自定义追加动画和其他数据
 ### TS构建，丰富的测试用例
 ### API
 ### 数据格式
+默认配置：
+```ts
+const config = {
+  el: document.querySelector('#app'),
+  data: [
+    {
+      name: 'node1',
+      value: 'node1',
+
+    }
+    ...
+  ],
+  config: {
+    fontSizeRange: [12, 24],
+    renderFn?:() => HTMLELEMENT | HTMLString,
+    speed: 50,
+    ...
+  },
+  lifeCycle: {
+    beforeSacn: ({item, index, instance}) => ({item, index, instance}),
+    afterScan: ({item, index, instance}) => ({item, index, instance}),
+    affect: ({item, index, instance}) => void
+  }
+}
+```
