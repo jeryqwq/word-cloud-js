@@ -1,7 +1,7 @@
 import { createTextNode } from './helper/genItem'
 
-export const renderItem = function(item: DataItem, index: number, instance: WordChart): Object{
-  const { el, getValue, elRect, value: { length }, RADIUSX, RADIUSY } = instance
+export const renderItem = function(item: DataItem, index: number, instance: WordChart): MappingDataItem{
+  const { elRect, value: { length }, RADIUSX, RADIUSY } = instance
   const itemEl = createTextNode(item, elRect)
   const k = -1 + (2 * (index + 1) - 1) / length
   const a = Math.acos(k)
@@ -15,12 +15,9 @@ export const renderItem = function(item: DataItem, index: number, instance: Word
     z,
     style: {},
   }
-  el.appendChild(itemEl)
-  const per = item.value / instance.maxValue
-  const mappingVal = Math.floor(getValue(per))
-  itemEl.style.fontSize = mappingVal + 'px'
   return {
+    ...item,
     el: itemEl,
-    ...singleEle
+    ...singleEle,
   }
 }

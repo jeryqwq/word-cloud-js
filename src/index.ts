@@ -4,9 +4,9 @@ import {DIRECTION} from './helper/constant'
 import { rotateY, rotateX, move } from './helper/animate'
 class WordChart {
   value: OptionData;
-  composFn?: (_: ScanItemType) => DataItem;
-  effectComposFn?: (_: ScanItemType) => void;
-  animateComposFn?:(_: OptionData) => void;
+  composFn?: (_: ScanItemType) => DataItem; // 组合scan
+  effectComposFn?: (_: ScanItemType) => void; // 组合effect
+  animateComposFn?:(_: OptionData) => void; // 组合animate动画
   el: HTMLElement;
   getValue: (val: number) => number
   sortValue: OptionData;
@@ -89,11 +89,19 @@ const config = {
   el: document.querySelector('#app'),
   data: temp,
 }
+// el.appendChild(itemEl)
+
 const instance = WordChart.of(config)  // 类实例
-instance.scan(({item, index, instance}) => ({   // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
-  ...item,
-  ...renderItem(item, index, instance)
-}))
+instance.scan(({item, index, instance}) => {
+  const props = renderItem(item, index, instance)
+  const { el } = props
+  const { el: elWrap } = instance
+  elWrap.appendChild(el)
+  return {   // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
+    ...item,
+    ...props
+  }
+})
 .animate((tempArr) => {
   tempArr.forEach(i => {
     const { el } = i as MappingDataItem
@@ -112,7 +120,14 @@ instance.scan(({item, index, instance}) => ({   // 生成布局，初始化动�
     item.z = z1
     item.x = x
   })
-}, 20).trigger()
+}, 20)
+.effect(({ instance, item}) => {
+  const { getValue } = instance
+  const per = item.value / instance.maxValue
+  const mappingVal = Math.floor(getValue(per))
+  item.el.style.fontSize = mappingVal + 'px'
+})
+.trigger()
 console.log(instance)
 
 // export const render = function (options: Options) {
