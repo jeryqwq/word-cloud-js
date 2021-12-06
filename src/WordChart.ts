@@ -1,5 +1,5 @@
 import { compos, rangMapping, throttle } from './helper/utils'
-import {DIRECTION} from './helper/constant'
+import { DIRECTION } from './helper/constant'
 
 class WordChart {
   value: OptionData;

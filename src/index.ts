@@ -1,4 +1,4 @@
-import { renderItem } from './renderEl';
+import { initParams } from './renderEl';
 import { rotateY, rotateX, move } from './helper/animate'
 import WordChart from './WordChart';
 const temp = []
@@ -16,7 +16,7 @@ const config = {
 
 const instance = WordChart.of(config)  // 类实例
 instance.scan(({item, index, instance}) => {
-  const props = renderItem(item, index, instance)
+  const props = initParams(item, index, instance)
   const { el } = props
   const { el: elWrap } = instance
   elWrap.appendChild(el)

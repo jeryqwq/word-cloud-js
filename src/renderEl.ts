@@ -1,6 +1,6 @@
 import { createTextNode } from './helper/genItem'
 
-export const renderItem = function(item: DataItem, index: number, instance: WordChart): MappingDataItem{
+export const initParams = function(item: DataItem, index: number, instance: WordChart): MappingDataItem{
   const { elRect, value: { length }, RADIUSX, RADIUSY } = instance
   const itemEl = createTextNode(item, elRect)
   const k = -1 + (2 * (index + 1) - 1) / length
