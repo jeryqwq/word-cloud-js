@@ -9,20 +9,23 @@ describe("init instance for wordChart", () => {
   }
   const config = {
     el: document.createElement('div'),
-    data: temp,
+    data: temp
   }
   const instance = WordChart.of(config)
-
   test('instance sort value', () => {
     const val = instance.sortValue
     const res = val.every((item, index) => {
       const next = val[index + 1]
       if(next) {
-        return item.value > next.value
+        return item.value <= next.value
       }else{
          return true
       }
     })
     expect(res).toBe(true)
+  })
+  test('max min value', () => {
+    const val = instance.sortValue
+    expect(val[val.length - 1].value === instance.maxValue).toBe(true)
   })
 })

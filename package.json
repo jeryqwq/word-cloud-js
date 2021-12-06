@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "rimraf dist && tsc && rollup -c rollup.config.js --watch",
     "clean": "rm -rf build",
-    "test": "jest --env=node --colors --coverage test"
+    "test": "jest --env=jsdom --colors --coverage test"
   },
   "keywords": [],
   "author": "",

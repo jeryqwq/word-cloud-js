@@ -31,6 +31,14 @@ describe("rangeMapping func test, percentage trasnform to value ", () => {
     const fn = rangMapping([0, 1], [12, 24])
     expect(fn(1)).toBe(24)
   })
+  test('mapping fontSize 12 to 24, min', () => {
+    const fn = rangMapping([0, 1], [10, 24])
+    expect(fn(-1)).toBe(10)
+  })
+  test('mapping fontSize 12 to 24, max', () => {
+    const fn = rangMapping([0, 1], [12, 24])
+    expect(fn(20)).toBe(24)
+  })
 })
 
 describe('throttle fn for animate', () => {
