@@ -1,5 +1,6 @@
+import { DIRECTION } from "./constant"
 export const rotateX = function (item: MappingDataItem, instance: WordChart){
-  const angleX = [-1, 1].includes(instance.DIRECTION)
+  const angleX = [DIRECTION.RIGHT2LEFT, DIRECTION.LEFT2RIGHT].includes(instance.DIRECTION)
   ? Math.PI / Infinity
   : Math.PI / ((Number(instance.DIRECTION) / 2) * Number(instance.speed))
   const cos = Math.cos(angleX)
@@ -13,7 +14,7 @@ export const rotateX = function (item: MappingDataItem, instance: WordChart){
   }
 }
 export const rotateY = function (item: MappingDataItem, instance: WordChart) {
-  const angleY = [-2, 2].includes(instance.DIRECTION)
+  const angleY = [DIRECTION.BOTTOM2TOP, DIRECTION.TOP2BOTTOM].includes(instance.DIRECTION)
   ? Math.PI / Infinity
   : Math.PI / (Number(instance.DIRECTION) * Number(instance.speed))
     const cos = Math.cos(angleY)
