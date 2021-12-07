@@ -13,7 +13,6 @@ export const initParams = function(item: DataItem, index: number, instance: Word
     x,
     y,
     z,
-    style: {},
   }
   return {
     ...item,

@@ -43,7 +43,6 @@ declare type MappingDataItem = {
   z: number,
   value: number,
   name: string,
-  style: Object
   el: HTMLElement
 }
 const DIRECTION = {
