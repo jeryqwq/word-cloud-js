@@ -1,4 +1,7 @@
 import { DIRECTION } from "./constant"
+export const move2D = function (item: MappingDataItem, instance: WordChart) {
+  
+}
 export const rotateX = function (item: MappingDataItem, instance: WordChart){
   const angleX = [DIRECTION.RIGHT2LEFT, DIRECTION.LEFT2RIGHT].includes(instance.DIRECTION)
   ? Math.PI / Infinity
