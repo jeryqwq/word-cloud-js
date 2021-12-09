@@ -1,8 +1,8 @@
 import { createTextNode } from './helper/genItem'
 
 export const initParams = function(item: DataItem, index: number, instance: WordChart): MappingDataItem{
-  const { elRect, value: { length }, RADIUSX, RADIUSY } = instance
-  const itemEl = createTextNode(item, elRect)
+  const { value: { length }, RADIUSX, RADIUSY } = instance
+  const itemEl = createTextNode(item)
   const k = -1 + (2 * (index + 1) - 1) / length
   const a = Math.acos(k)
   const b = a * Math.sqrt(length * Math.PI)
@@ -19,4 +19,9 @@ export const initParams = function(item: DataItem, index: number, instance: Word
     el: itemEl,
     ...singleEle,
   }
+}
+function parseCSV(input:string): Record<string,string>[]{
+  return [{
+    test: '213'
+  }]
 }

@@ -36,6 +36,7 @@ interface WordChart {
   RADIUSY: number
   DIRECTION: DIRECTION
   speed: number
+  getSpiral: (_: number) => [number, number],
 }
 declare type MappingDataItem = {
   x: number,

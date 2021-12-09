@@ -1,6 +1,5 @@
-import { compos, rangMapping, throttle } from './helper/utils'
+import { compos, rangMapping, throttle, archimedeanSpiral } from './helper/utils'
 import { DIRECTION } from './helper/constant'
-
 class WordChart {
   value: OptionData;
   composFn?: (_: ScanItemType) => DataItem; // 组合scan
@@ -16,6 +15,7 @@ class WordChart {
   DIRECTION: number
   config: Config
   speed: number
+  getSpiral: (_: number) => [number, number]
   private constructor( options: Options ) {
     this.el = options.el
     this.value = [...options.data] // clone
@@ -28,6 +28,7 @@ class WordChart {
     this.DIRECTION = DIRECTION.LEFT2RIGHT
     this.config = options.config || {}
     this.speed = this.config.speed || 200
+    this.getSpiral = archimedeanSpiral([this.elRect.width, this.elRect.height], { b:  })
     this.getValue = rangMapping([0, 1], this.config.fontSizeRange || [12, 24])
   }
   trigger() {
