@@ -1,6 +1,6 @@
 const { createCanvas } = require('canvas')
 
-var cloud = require("../");
+var cloud = require("./cloud");
 
 var words = ["Hello", "world", "normally", "you", "want", "more", "words", "than", "this"]
     .map(function(d) {

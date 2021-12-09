@@ -1,8 +1,7 @@
 // Word cloud layout by Jason Davies, https://www.jasondavies.com/wordcloud/
 // Algorithm due to Jonathan Feinberg, http://static.mrfeinberg.com/bv_ch03.pdf
 
-import {Dispatch} from "./helper/dispatch";
-
+import dispatch from "./dispatch";
 var cloudRadians = Math.PI / 180,
     cw = 1 << 11 >> 5,
     ch = 1 << 11;
@@ -17,10 +16,10 @@ export default function() {
       rotate = cloudRotate,
       padding = cloudPadding,
       spiral = archimedeanSpiral,
-      words: any = [],
+      words = [],
       timeInterval = Infinity,
-      event = Dispatch.of("word", "end"),
-      timer: any = null,
+      event = dispatch("word", "end"),
+      timer = null,
       random = Math.random,
       canvas = cloudCanvas;
 

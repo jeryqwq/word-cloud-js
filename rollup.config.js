@@ -3,14 +3,18 @@ import livereload from 'rollup-plugin-livereload'
 import serve from 'rollup-plugin-serve'
 
 export default {
-  input: 'src/index.ts',
+  input: 'src/browserify.js',
+  // input: 'src/index.ts',
   output: {
     dir: 'dist',
-    format: 'cjs',
-    sourcemap: true
+    format: 'umd',
+    name: 'wordCloud',
+    sourcemap: true,
+    indent: false,
+    extend: true
   },
   plugins: [
-    typescript(),
+    // typescript(),
     serve({contentBase: '', port: 7777}),
     livereload()
     ]
