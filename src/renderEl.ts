@@ -77,8 +77,9 @@ export const findLocation = function (item: DataItem, instance: WordChart, index
       for(let i = 0; i < domLocations.length; i ++ ){
         const itemLoc = domLocations[i]
         const res = checkRepeat(curRect, itemLoc)
+        console.log(curRect.width, itemLoc.width)
+        debugger
         if(res){
-          console.log(res, curRect, itemLoc)
           // let j = i
           // while(domLocations[++j]){
           //   tryNext = checkRepeat(curRect, domLocations[j])
