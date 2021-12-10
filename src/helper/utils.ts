@@ -28,10 +28,16 @@ export const throttle = function (fn: Function, ms: number) {
     }
   }
 }
-export function archimedeanSpiral(size: Array<number>, { step = 0.1, b = 5, a = 10 } = {}){ //  步长(弧度), 螺距, 起始点距中心的距离 阿基米德螺线 方程
+export function archimedeanSpiral(size: Array<number>, { step = 0.1, b = 5, a = 1 } = {}){ //  步长(弧度), 螺距, 起始点距中心的距离 阿基米德螺线 方程
   const e = size[0] / size[1]; // 根据画布长宽比例进行对应缩放
   // 参数t为当前弧度值
   return function(t: number): [number, number] {
     return [e * (a + b * (t *= step)) * Math.cos(t), (a + b * t) * Math.sin(t)];
   };
+}
+export const checkRepeat = function (curLoc: DOMRect, matchLoc: DOMRect):boolean {
+  return !!(curLoc.right  < matchLoc.left  ||
+    curLoc.left  > matchLoc.right ||
+    curLoc.bottom < matchLoc.top  ||
+    curLoc.top  > matchLoc.bottom )
 }

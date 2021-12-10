@@ -41,7 +41,7 @@ interface WordChart {
 declare type MappingDataItem = {
   x: number,
   y: number,
-  z: number,
+  z?: number, // 仅滚动
   value: number,
   name: string,
   el: HTMLElement
@@ -51,4 +51,13 @@ const DIRECTION = {
   LEFT2RIGHT = -1,
   TOP2BOTTOM = 2,
   BOTTOM2TOP = -2
+}
+declare type DomLocation = {
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+  el?: HTMLElement,
+  right: number,
+  bottom: number
 }

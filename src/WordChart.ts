@@ -28,11 +28,11 @@ class WordChart {
     this.DIRECTION = DIRECTION.LEFT2RIGHT
     this.config = options.config || {}
     this.speed = this.config.speed || 200
-    this.getSpiral = archimedeanSpiral([this.elRect.width, this.elRect.height], { b:  })
+    this.getSpiral = archimedeanSpiral([width, height], {b: width / 100})
     this.getValue = rangMapping([0, 1], this.config.fontSizeRange || [12, 24])
   }
   trigger() {
-    this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
+    this.sortValue = this.sortValue.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
     this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
     this.animateComposFn && this.animateComposFn(this.value)
     return this
