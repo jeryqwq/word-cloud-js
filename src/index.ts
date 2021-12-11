@@ -2,7 +2,7 @@ import { initParams, findLocation } from './renderEl';
 import { rotate3D, move3D } from './batchAnimate';
 import WordChart from './WordChart';
 const temp = []
-for (let index = 0; index < 5; index++) {
+for (let index = 0; index < 15; index++) {
   temp.push({
     value: Math.floor(Math.random() * 1000),
     name: `test-${index}`
@@ -36,7 +36,7 @@ const instance = WordChart.of(config)  // 类实例
 //   const mappingVal = Math.floor(getValue(per))
 //   item.el && (item.el.style.fontSize = mappingVal + 'px')
 // })
-instance.scan(({item, index, instance}) => {
+instance.effect(({item, index, instance}) => {
   const props = findLocation(item, instance, index)
   return {   // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
     ...item,

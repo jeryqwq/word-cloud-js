@@ -19,94 +19,36 @@ export const initParams = function(item: DataItem, index: number, instance: Word
   }
 }
 let domLocations: Array<DOMRect> = []
-let startPoint = {
-  x: 0,
-  y: 0
-}
-function intersect(word: HTMLElement, x: number, y: number, instance: WordChart): boolean{
-  instance.el.appendChild(word);    
-  word.style.left = x - word.offsetWidth/2 + "px";
-  word.style.top = y - word.offsetHeight/2 + "px";
-  var currentWord = word.getBoundingClientRect();
-  instance.el.removeChild(word);
-  for(var i = 0; i < domLocations.length; i+=1){
-      var comparisonWord = domLocations[i];
-      if(!(currentWord.right  < comparisonWord.left  ||
-           currentWord.left  > comparisonWord.right ||
-           currentWord.bottom  < comparisonWord.top ||
-           currentWord.top  > comparisonWord.bottom )){
-          return true;
-      }
-  }
-  
-  return false;
-}
-export const findLocation = function (item: DataItem, instance: WordChart, index: number): MappingDataItem {
+
+export const findLocation = async function (item: DataItem, instance: WordChart, index: number) {
   const { width, height } = instance.elRect
-  let retx = 0, rety = 0
+
+  for( let i = 0; i <= 150; i++) {
   const el = createTextNode(item)
   el.style.fontSize = instance.getValue(item.value / instance.maxValue) + 'px'
+  console.log(instance.getValue(item.value / instance.maxValue))
   instance.el.appendChild(el)
-  for( let i = 0; i <= 150; i++) {
   const [x, y] = instance.getSpiral(i * 5)
-  //   if(!intersect(word, x, y, instance)){
-  //     instance.el.appendChild(word);
-  //     console.log(x, y)
-  //     word.style.left = x + word.offsetWidth/2 + "px";
-  //     word.style.top = y + word.offsetHeight/2 + "px";
-  //     domLocations.push(word.getBoundingClientRect());
-  //   }
-  // const { width: elWidth, height: elHeight } = elItem
-  //   const curLocaiton = {
-  //     left: x + width / 2,
-  //     top: y + height / 2,
-  //     width: elWidth,
-  //     height: elHeight,
-  //     right: x + elWidth + width / 2,
-  //     bottom: y + elHeight + height / 2
-  //   }
   const left = x + width / 2 
   const top = y + height / 2
   el.style.left = left + 'px'
   el.style.top = top +'px'
-    const curRect = el.getBoundingClientRect()
+  el.style.lineHeight = '0.8'
+  const curRect = el.getBoundingClientRect()
+  instance.el.removeChild(el)
     if(!domLocations.length) {  // 首次定位
       domLocations.push(curRect)
       break
     }else{ // 冲突检测
-      for(let i = 0; i < domLocations.length; i ++ ){
-        const itemLoc = domLocations[i]
-        const res = checkRepeat(curRect, itemLoc)
-        console.log(curRect.width, itemLoc.width)
-        debugger
-        if(res){
-          // let j = i
-          // while(domLocations[++j]){
-          //   tryNext = checkRepeat(curRect, domLocations[j])
-          // }
-          // if(tryNext) {
-          //   domLocations.push(domLocations[j])
-          //   retx = left
-          //   rety = top
-          //   break
-          // }
+        const res = checkRepeat(curRect, domLocations)
+        if(!res) {
           domLocations.push(curRect)
-          return {
-            ...item,
-            x: left,
-            y: top,
-            el
-          }
+        instance.el.appendChild(el)
+          break
         }
-      }
     }
   }
-  return {
-    ...item,
-    x: retx, 
-    y: rety,
-    el
-  }
+ 
 }
 
 
