@@ -47,3 +47,16 @@ export const checkRepeat = function (curLoc: DOMRect, wordDown: Array<DOMRect>):
   }
   return false
 }
+export const rect2Object = function(rect: DOMRect): DOMRect{
+  return {
+    left: rect.left,
+    top: rect.top,
+    width: rect.width,
+    height: rect.height,
+    x: rect.x,
+    y: rect.y,
+    right: rect.right,
+    bottom: rect.bottom,
+    toJSON: () => {}
+  }
+}

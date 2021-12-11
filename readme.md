@@ -31,6 +31,8 @@ const config = {
     fontSizeRange: [12, 24],
     renderFn?:() => HTMLELEMENT | HTMLString,
     speed: 50,
+    autoSuit: true, // 自动适配试图
+    
     ...
   },
   lifeCycle: {
