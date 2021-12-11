@@ -29,7 +29,7 @@ class WordChart {
     this.config = options.config || {}
     this.speed = this.config.speed || 200
     this.getSpiral = archimedeanSpiral([width, height], {b: width / 100})
-    this.getValue = rangMapping([0, 1], this.config.fontSizeRange || [12, 24])
+    this.getValue = rangMapping([0, 1], this.config.fontSizeRange as [number, number] || [12, 24])
   }
   trigger() {
     this.sortValue = this.sortValue.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)

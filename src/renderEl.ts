@@ -1,5 +1,5 @@
 import { createTextNode } from './helper/genItem'
-import { checkRepeat, rect2Object } from './helper/utils'
+import { checkRepeat } from './helper/utils'
 
 export const initParams = function(item: DataItem, index: number, instance: WordChart): MappingDataItem{
   const { value: { length }, RADIUSX, RADIUSY } = instance
@@ -29,19 +29,20 @@ export const findLocation = async function (item: DataItem, instance: WordChart,
   const [x, y] = instance.getSpiral(i * 5)
   const left = x + width / 2
   const top = y + height / 2
-  el.style.left = left + 'px'
-  el.style.top = top +'px'
-  el.style.lineHeight = '0.8'
+  el.style.lineHeight = '1'
+  el.style.writingMode = item.direction ? 'tb' : ''
+  // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
+  el.style.transform = `translate(${left}px, ${top}px)`
+  el.style.padding = '15px'
   const curRect = el.getBoundingClientRect()
-  // instance.el.removeChild(el)
+  const rectObj = curRect.toJSON()
     if(!domLocations.length) {  // 首次定位
-      domLocations.push(rect2Object(curRect))
+      domLocations.push(rectObj)
       break
     }else{ // 冲突检测
-        const res = checkRepeat(rect2Object(curRect), domLocations)
+        const res = checkRepeat(rectObj, domLocations)
         if(!res) {
-          domLocations.push(rect2Object(curRect))
-          // instance.el.appendChild(el)
+          domLocations.push(rectObj)
           break
         }
     }
