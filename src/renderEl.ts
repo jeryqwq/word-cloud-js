@@ -33,7 +33,7 @@ export const findLocation = async function (item: DataItem, instance: WordChart,
   el.style.writingMode = item.direction ? 'tb' : ''
   // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
   el.style.transform = `translate(${left}px, ${top}px)`
-  el.style.padding = '15px'
+  el.style.padding = '5px'
   const curRect = el.getBoundingClientRect()
   const rectObj = curRect.toJSON()
     if(!domLocations.length) {  // 首次定位
