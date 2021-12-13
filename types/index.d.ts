@@ -11,7 +11,9 @@ declare type Config = {
   font?: "sans-serif",
   fontSizeRange?:{[key: 0 | 1]: number },
   renderFn?: (item: WordItemAfter) => HTMLElement
-  speed?: number
+  speed?: number,
+  colors?: Array[string],
+  [key: string]: any
 }
 declare type DataItem = { value: number, name: string ,  x?: number,
   y?: number,
@@ -38,6 +40,8 @@ interface WordChart {
   DIRECTION: DIRECTION
   speed: number
   getSpiral: (_: number) => [number, number],
+  config: Config
+  [key: string]: any
 }
 declare type MappingDataItem = {
   x: number,
@@ -61,4 +65,11 @@ declare type DomLocation = {
   el?: HTMLElement,
   right: number,
   bottom: number
+}
+declare type ScanParams = {item: DataItem, index: number, instance: Worker}
+declare type StandardType = {
+  scans: Array<Function>
+  animates: Array<Function>
+  effects: Array<Function>
+  [key: string]: Array<Function>
 }

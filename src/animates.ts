@@ -1,4 +1,6 @@
 import { rotateX, rotateY, move } from "./helper/animate";
+
+// animate 
 export const move3D = function(tempArr: OptionData, instance: WordChart) {
   tempArr.forEach(i => {
     const { el } = i as MappingDataItem

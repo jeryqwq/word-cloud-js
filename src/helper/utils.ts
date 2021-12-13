@@ -35,6 +35,7 @@ export function archimedeanSpiral(size: Array<number>, { step = 0.1, b = 5, a = 
     return [e * (a + b * (t *= step)) * Math.cos(t), (a + b * t) * Math.sin(t)];
   };
 }
+
 export const checkRepeat = function (curLoc: DOMRect, wordDown: Array<DOMRect>):boolean {
   for(let i = 0; i < wordDown.length; i++) {
     const matchLoc = wordDown[i]

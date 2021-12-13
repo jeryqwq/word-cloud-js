@@ -1,6 +1,8 @@
-import { initParams, findLocation } from './renderEl';
-import { rotate3D, move3D } from './batchAnimate';
+import { initParams, findLocation } from './scans';
+import { setColor, suitLayout } from './effets';
+import { rotate3D, move3D } from './animates'
 import WordChart from './WordChart';
+import { MODE, TEXT_ORIENTATION } from './helper/constant';
 const temp = []
 const words = ['这根本就不好玩', '再见', 'MDML在线测试', '深入浅出CSS3', 'React测试', '这就是个文字内容', '高刷屏' , '默认触发间隔', '假如我说假如', '发现越来越多的美好', '小惊喜', '不会只有我', '哦次打次', '客气客气']
 for (let index = 0; index < words.length; index++) {
@@ -11,15 +13,76 @@ for (let index = 0; index < words.length; index++) {
     direction: Math.random() > 0.5
   })
 }
+
 const config = {
   el: document.querySelector('#app'),
   data: temp,
   config: {
-    fontSizeRange: [12, 30]
+    mode: MODE.SCROLL
+  },
+  hooks: {
+    beforeScan: (_: ScanParams) => _,
+    afterScan: (_: ScanParams) => _,
+    animates: {
+      interval: 1000,
+      cb: (val: Array<MappingDataItem> ) => {}
+    }
   }
 }
-
-const instance = WordChart.of(config)  // 类实例
+function init (config: Options) {
+  const instance = WordChart.of(config)  // 类实例
+  const mode = instance?.config?.mode
+  if(mode === MODE.SCROLL) {
+    exec(instance, forMove)
+  }else{
+    exec(instance, forStatic)
+  }
+  instance.trigger()
+}
+function exec (instance: WordChart, target: StandardType) {
+  ['scan', 'animate', 'effect'].forEach(type => {
+    target[type + 's'].forEach(i => {
+      switch (type) {
+        case 'scan':
+          {
+            const fn = instance[type as 'scan']
+            i && fn.bind(instance)(function ({item, index, instance}){
+              return i(item, index, instance)
+            });
+          }
+          break;
+          case 'animate':
+            {
+              const fn = instance[type as 'animate']
+              fn.bind(instance)((_: OptionData) => {
+                i(_, instance)
+              }, 20)
+            }
+          break;
+          case 'effect':
+            {
+              const fn = instance[type as 'effect']
+              fn.bind(instance)(({ item, index, instance }) => {
+                i(item as MappingDataItem, index, instance)
+              })
+            }
+          break;
+      }
+    })
+  })
+}
+const forMove = { // 滚动模式
+  scans: [initParams],
+  animates: [move3D, rotate3D],
+  effects: [setColor]
+}
+const forStatic = { // 普通模式
+  scans: [findLocation],
+  effects: [setColor, suitLayout],
+  animates: []
+}
+init(config)
+init({...config, el: document.querySelector('#app2'), config: { mode: MODE.NORMAL }})
 // instance.scan(({item, index, instance}) => { // 滚动代码
 //   const props = initParams(item, index, instance)
 //   const { el } = props
@@ -42,19 +105,14 @@ const instance = WordChart.of(config)  // 类实例
 //   const mappingVal = Math.floor(getValue(per))
 //   item.el && (item.el.style.fontSize = mappingVal + 'px')
 // })
-console.time('test')
-instance.effect(({item, index, instance}) => {
-  const props = findLocation(item, instance, index)
-  return {   // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
-    ...item,
-    ...props
-  }
-})
-.trigger() // 调用trigger不触发任何事件执行
-console.timeEnd('test')
-
-console.log(instance)
-
-// export const render = function (options: Options) {
-
-// }
+// instance.scan(({item, index, instance}) => {
+//   const props = findLocation(item, instance, index)
+//   return {
+//     ...item,
+//     ...props
+//   }
+// })
+// instance.effect(({item, index, instance}) => {
+//   setColor(item as MappingDataItem, index, instance)
+// })
+// .trigger() // 调用trigger不触发任何事件执行

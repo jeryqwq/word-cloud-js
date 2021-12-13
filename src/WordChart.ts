@@ -1,5 +1,6 @@
 import { compos, rangMapping, throttle, archimedeanSpiral } from './helper/utils'
-import { DIRECTION } from './helper/constant'
+import { DIRECTION, defaultOptions } from './helper/constant'
+import { mergeOptions } from './helper/animate';
 class WordChart {
   value: OptionData;
   composFn?: (_: ScanItemType) => DataItem; // 组合scan
@@ -16,6 +17,7 @@ class WordChart {
   config: Config
   speed: number
   getSpiral: (_: number) => [number, number]
+  
   private constructor( options: Options ) {
     this.el = options.el
     this.value = [...options.data] // clone
@@ -26,18 +28,18 @@ class WordChart {
     this.RADIUSX = (width - 50) / 2
     this.RADIUSY = (height - 50) / 2
     this.DIRECTION = DIRECTION.LEFT2RIGHT
-    this.config = options.config || {}
+    this.config = mergeOptions(options.config, defaultOptions) || {}
     this.speed = this.config.speed || 200
     this.getSpiral = archimedeanSpiral([width, height], {b: width / 100})
     this.getValue = rangMapping([0, 1], this.config.fontSizeRange as [number, number] || [12, 24])
   }
   trigger() {
-    this.sortValue = this.sortValue.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
+    this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
     this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
     this.animateComposFn && this.animateComposFn(this.value)
     return this
   }
-  animate(fn: (_: OptionData) => void, ms: number):WordChart {
+  animate(fn: (_: OptionData) => void, ms: number = 20):WordChart {
     const that = this
     const throttledFn = throttle(fn, ms)
     const wrap = function(){

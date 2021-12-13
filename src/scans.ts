@@ -10,6 +10,7 @@ export const initParams = function(item: DataItem, index: number, instance: Word
   const x = RADIUSX * Math.sin(a) * Math.cos(b)
   const y = RADIUSY * Math.sin(a) * Math.sin(b)
   const z = RADIUSX * Math.cos(a)
+  instance.el.appendChild(itemEl)
   return {
     ...item,
     el: itemEl,
@@ -20,13 +21,14 @@ export const initParams = function(item: DataItem, index: number, instance: Word
 }
 let domLocations: Array<DOMRect> = []
 
-export const findLocation = async function (item: DataItem, instance: WordChart, index: number) {
+export const findLocation =  function (item: DataItem, index: number,instance: WordChart) {
+  let retx, rety
   const { width, height } = instance.elRect
   const el = createTextNode(item)
   el.style.fontSize = instance.getValue(item.value / instance.maxValue) + 'px'
   for( let i = 0; i <= 150; i++) {
   instance.el.appendChild(el)
-  const [x, y] = instance.getSpiral(i * 5)
+  const [x, y] = instance.getSpiral(i * 15)
   const left = x + width / 2
   const top = y + height / 2
   el.style.lineHeight = '1'
@@ -34,20 +36,28 @@ export const findLocation = async function (item: DataItem, instance: WordChart,
   // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
   el.style.transform = `translate(${left}px, ${top}px)`
   el.style.padding = '5px'
-  const curRect = el.getBoundingClientRect()
-  const rectObj = curRect.toJSON()
+  const rectObj = el.getBoundingClientRect().toJSON()
     if(!domLocations.length) {  // 首次定位
       domLocations.push(rectObj)
+      retx = rectObj.x
+      rety = rectObj.y
       break
     }else{ // 冲突检测
         const res = checkRepeat(rectObj, domLocations)
         if(!res) {
           domLocations.push(rectObj)
+          retx = rectObj.x 
+          rety = rectObj.y
           break
         }
     }
   }
- 
+  return {
+    x: retx,
+    y: rety,
+    el,
+    ...item
+  }
 }
 
 
