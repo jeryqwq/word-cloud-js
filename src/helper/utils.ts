@@ -36,15 +36,54 @@ export function archimedeanSpiral(size: Array<number>, { step = 0.1, b = 5, a = 
   };
 }
 
-export const checkRepeat = function (curLoc: DOMRect, wordDown: Array<DOMRect>):boolean {
+export const checkRepeat = function (curLoc: DOMRect, wordDown: Array<DOMRect>, gridNumber: number):boolean {
   for(let i = 0; i < wordDown.length; i++) {
     const matchLoc = wordDown[i]
-    if(!(curLoc.right  < matchLoc.left  ||
-      curLoc.left  > matchLoc.right ||
-      curLoc.bottom < matchLoc.top  ||
-      curLoc.top  > matchLoc.bottom )){
+    if(!(curLoc.right < matchLoc.left  - gridNumber  ||
+      curLoc.left  > matchLoc.right + gridNumber ||
+      curLoc.bottom < matchLoc.top  - gridNumber ||
+      curLoc.top > matchLoc.bottom  + gridNumber)){
         return true
       }
   }
   return false
+}
+
+export const compareLocation = function (item: DOMRect, layout: WordChartLayout) {
+  let ret: WordChartLayout = { ...layout };
+  ret.left = Math.min(item.left, layout.left)
+  ret.right = Math.max(item.right, layout.right)
+  ret.top = Math.min(item.top, layout.top)
+  ret.bottom = Math.max(item.bottom, layout.bottom)
+  return ret
+}
+export const mergeOptions = function (a: Config, b: any) { // 两层浅克隆
+  let ret: Config = {}
+  for (const key  in b) {
+    const element = b[key];
+    const con = element.constructor
+    if(con === Number || con === String) {
+      ret[key] = element
+    }else{
+      ret[key] = Array.isArray(element) ? new con(...element) : {...element}
+    }
+  }
+  for (const key in a) {
+    const element = a[key];
+    const con = element.constructor
+    if(con === Number || con === String) {
+      ret[key] = element
+    }else{
+      ret[key] = Array.isArray(element) ? new con(...element) : {...element}
+    }
+  }
+  return ret
+}
+export const setElConfig = function(el: HTMLElement, config: Config) {
+  config.backgroundColor && (el.style.backgroundColor = config.backgroundColor)
+  config.borderColor && (el.style.borderColor = config.borderColor)
+  config.borderWidth && (el.style.borderWidth = config.borderWidth + 'px')
+  el.style.lineHeight = '1'
+  config.padding && (el.style.padding = `${config.padding[0]}px ${config.padding[1]}px`)
+  config.animate && (el.classList.add('word-cloud-animate'))
 }

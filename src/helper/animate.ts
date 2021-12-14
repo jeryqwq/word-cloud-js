@@ -53,25 +53,3 @@ export const move = function (item: MappingDataItem, instance: WordChart) {
     transform
   }
 }
-export const mergeOptions = function (a: Config, b: Config) { // 两层浅克隆
-  let ret: Config = {}
-  for (const key  in b) {
-    const element = b[key];
-    const con = element.constructor
-    if(con === Number || con === String) {
-      ret[key] = element
-    }else{
-      ret[key] = new con(...element)
-    }
-  }
-  for (const key in a) {
-    const element = a[key];
-    const con = element.constructor
-    if(con === Number || con === String) {
-      ret[key] = element
-    }else{
-      ret[key] = new con(...element)
-    }
-  }
-  return ret
-}

@@ -3,17 +3,40 @@ declare type WordItemAfter = {
   text: string
 }
 declare type Config = {
-  spiralResolution?: 1, //Lower = better resolution
+  orientation?: 0 | 1 | number
   spiralLimit?: number,
-  lineHeight?: 0.7,
-  xWordPadding?: 0,
-  yWordPadding?: 3,
   font?: "sans-serif",
-  fontSizeRange?:{[key: 0 | 1]: number },
+  sizeRange?:{[key: 0 | 1]: number },
   renderFn?: (item: WordItemAfter) => HTMLElement
   speed?: number,
   colors?: Array[string],
-  [key: string]: any
+  sizeRange?: [12, 24],
+  gridSize?: 27, //字符间隔
+  borderColor?: "rgba(105,207,255)",
+  borderWidth?: 2,
+  backgroundColor?: "rgba(16,22,24)",
+  animate?:true,
+  padding?: [10, 17],
+  tooltip?: {
+    show: true,
+    padding: [15, 35],
+    backgroundColor: 'rgba(50,50,50,0.7)',
+    borderRadius: 0,
+    textStyle: {
+      color: '#fff',
+      fontFamily: 'Microsoft YaHei',
+      fontSize: 14,
+      lineHeight: 30
+    },
+    bgStyle?: {
+      width: 0,
+      height: 0,
+      url: "/static/vis_resource/background/bg-tooltip.png"
+    },
+    extraCssText?: "",
+    tooltipEditor?:''
+  },
+  [key: string]: any,
 }
 declare type DataItem = { value: number, name: string ,  x?: number,
   y?: number,
@@ -41,7 +64,8 @@ interface WordChart {
   speed: number
   getSpiral: (_: number) => [number, number],
   config: Config
-  [key: string]: any
+  elWrap: HTMLElement,
+  layout: WordChartLayout
 }
 declare type MappingDataItem = {
   x: number,
@@ -68,8 +92,11 @@ declare type DomLocation = {
 }
 declare type ScanParams = {item: DataItem, index: number, instance: Worker}
 declare type StandardType = {
-  scans: Array<Function>
-  animates: Array<Function>
-  effects: Array<Function>
   [key: string]: Array<Function>
+}
+declare type WordChartLayout = {
+  left: number,
+  top: number,
+  right: number,
+  bottom: number
 }

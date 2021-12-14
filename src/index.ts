@@ -1,8 +1,9 @@
 import { initParams, findLocation } from './scans';
-import { setColor, suitLayout } from './effets';
+import { setColor } from './effets';
 import { rotate3D, move3D } from './animates'
 import WordChart from './WordChart';
 import { MODE, TEXT_ORIENTATION } from './helper/constant';
+import { suitLayout } from './finally';
 const temp = []
 const words = ['这根本就不好玩', '再见', 'MDML在线测试', '深入浅出CSS3', 'React测试', '这就是个文字内容', '高刷屏' , '默认触发间隔', '假如我说假如', '发现越来越多的美好', '小惊喜', '不会只有我', '哦次打次', '客气客气']
 for (let index = 0; index < words.length; index++) {
@@ -18,15 +19,11 @@ const config = {
   el: document.querySelector('#app'),
   data: temp,
   config: {
-    mode: MODE.SCROLL
+    mode: MODE.SCROLL,
   },
   hooks: {
     beforeScan: (_: ScanParams) => _,
     afterScan: (_: ScanParams) => _,
-    animates: {
-      interval: 1000,
-      cb: (val: Array<MappingDataItem> ) => {}
-    }
   }
 }
 function init (config: Options) {
@@ -38,10 +35,11 @@ function init (config: Options) {
     exec(instance, forStatic)
   }
   instance.trigger()
+  console.log(instance)
 }
 function exec (instance: WordChart, target: StandardType) {
-  ['scan', 'animate', 'effect'].forEach(type => {
-    target[type + 's'].forEach(i => {
+  Object.keys(forStatic).forEach(type => {
+    target[type].forEach(i => {
       switch (type) {
         case 'scan':
           {
@@ -67,52 +65,29 @@ function exec (instance: WordChart, target: StandardType) {
               })
             }
           break;
+          case 'finally':
+            {
+              const fn = instance[type as 'finally']
+              fn.bind(instance)((instance) => {
+                i(instance)
+              })
+            }
+          break;
       }
     })
   })
 }
 const forMove = { // 滚动模式
-  scans: [initParams],
-  animates: [move3D, rotate3D],
-  effects: [setColor]
+  scan: [initParams],
+  animate: [move3D, rotate3D],
+  effect: [setColor],
+  finally: []
 }
 const forStatic = { // 普通模式
-  scans: [findLocation],
-  effects: [setColor, suitLayout],
-  animates: []
+  scan: [findLocation],
+  effect: [setColor],
+  animate: [],
+  finally: [suitLayout]
 }
 init(config)
 init({...config, el: document.querySelector('#app2'), config: { mode: MODE.NORMAL }})
-// instance.scan(({item, index, instance}) => { // 滚动代码
-//   const props = initParams(item, index, instance)
-//   const { el } = props
-//   const { el: elWrap } = instance
-//   elWrap.appendChild(el)
-//   return {   // 生成布局，初始化动画参数  x, y, z, el...，传给下一层业务继续扫描
-//     ...item,
-//     ...props
-//   }
-// })
-// .animate((tempArr) => {
-//   move3D(tempArr, instance)
-// }, 20) //高刷屏默认触发间隔 120hz > 60hz > 30hz, 防止在高配或者低配电脑上requestAnimateFrame表现不一致，手动配置一个间隔，
-// .animate((tempArr) => {
-//   rotate3D(tempArr, instance)
-// }, 20)
-// .effect(({ instance, item}) => {
-//   const { getValue } = instance
-//   const per = item.value / instance.maxValue
-//   const mappingVal = Math.floor(getValue(per))
-//   item.el && (item.el.style.fontSize = mappingVal + 'px')
-// })
-// instance.scan(({item, index, instance}) => {
-//   const props = findLocation(item, instance, index)
-//   return {
-//     ...item,
-//     ...props
-//   }
-// })
-// instance.effect(({item, index, instance}) => {
-//   setColor(item as MappingDataItem, index, instance)
-// })
-// .trigger() // 调用trigger不触发任何事件执行
