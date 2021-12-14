@@ -1,5 +1,6 @@
 ##  词云图
-<img src="./demo.gif">
+<img src="./demo.gif" style="width: 500px">
+
 File           |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
 ---------------|----------|----------|----------|----------|-------------------|
 All files      |    62.69 |       60 |    52.63 |    61.02 |                   |
