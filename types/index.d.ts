@@ -17,8 +17,10 @@ declare type Config = {
   backgroundColor?: "rgba(16,22,24)",
   animate?:true,
   padding?: [10, 17],
+  events?: Record<string, (item: MappingDataItem, e: Event) => void>
   tooltip?: {
     show: true,
+    render: (item: MappingDataItem, elWrap: HTMLElement) => string | HTMLElement
     padding: [15, 35],
     backgroundColor: 'rgba(50,50,50,0.7)',
     borderRadius: 0,
@@ -51,7 +53,7 @@ declare type Options = {
   data: OptionData,
   config: Config
 }
-interface WordChart {
+interface WordChartBase {
   getValue: (_: number) => number,
   el: HTMLElement;
   value:   OptionData;
@@ -65,7 +67,10 @@ interface WordChart {
   getSpiral: (_: number) => [number, number],
   config: Config
   elWrap: HTMLElement,
-  layout: WordChartLayout
+  layout: WordChartLayout,
+  setActive: (item: MappingDataItem, el: HTMLElement, e: MouseEvent) => void
+  clearActive: Function
+  active?: Active
 }
 declare type MappingDataItem = {
   x: number,
@@ -99,4 +104,8 @@ declare type WordChartLayout = {
   top: number,
   right: number,
   bottom: number
+}
+declare type Active = {
+  item?: MappingDataItem,
+  el?: HTMLElement
 }

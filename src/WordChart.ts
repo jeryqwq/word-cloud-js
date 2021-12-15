@@ -1,7 +1,7 @@
 import { compos, rangMapping, throttle, archimedeanSpiral } from './helper/utils'
 import { DIRECTION, defaultOptions } from './helper/constant'
 import { mergeOptions } from './helper/utils';
-class WordChart {
+class WordChart implements WordChartBase {
   value: OptionData;
   composFn?: (_: ScanItemType) => DataItem; // 组合scan
   effectComposFn?: (_: ScanItemType) => void; // 组合effect
@@ -21,6 +21,7 @@ class WordChart {
   getSpiral: (_: number) => [number, number]
   layout: WordChartLayout
   toolTipEl: HTMLElement
+  active?: Active
   private constructor( options: Options ) {
     this.el = options.el
     this.value = [...options.data] // clone
@@ -41,7 +42,10 @@ class WordChart {
     this.el.appendChild(this.elWrap)
     this.toolTipEl = document.createElement('div')
     this.toolTipEl.style.position = 'fixed'
-    this.elWrap.appendChild(this.toolTipEl)
+    this.toolTipEl.style.transition = 'all .4s'
+    this.el.appendChild(this.toolTipEl)
+    this.clearActive = throttle(this.clearActive, 300)
+    this.setActive = throttle(this.setActive, 100)
     this.layout = {
       left: Infinity,
       top: Infinity,
@@ -57,6 +61,34 @@ class WordChart {
       this.finallyComposFn && this.finallyComposFn(this)
     }, 0);
     return this
+  }
+  clearActive = () =>  {
+    this.active = undefined
+    this.toolTipEl.style.display = 'none'
+  }
+  setActive = (item: MappingDataItem, el: HTMLElement, e: MouseEvent) => {
+    this.active = {
+      item,
+      el
+    }
+    this.toolTipEl.style.left = e.x + 'px'
+    this.toolTipEl.style.top = e.y + 'px'
+    this.toolTipEl.style.display = 'inline-block'
+    if(this.config?.tooltip?.render) {
+      const context = this.config.tooltip.render(item, this.toolTipEl)
+      if(typeof context === 'string') {
+        this.toolTipEl.innerHTML = context
+      }else if( context.constructor.toString().includes('Element')) { // dom
+        this.toolTipEl.appendChild(context)
+      }else{
+        console.error(`the render function should return a HTMLElement or Html String, not a ${context.constructor.toString()}`)
+      }
+    }else{ // use setting
+      this.toolTipEl.style.backgroundColor = 'rgb(105, 207, 255)'
+      this.toolTipEl.textContent = `${item.name}: ${item.value}`
+
+    }
+
   }
   animate(fn: (_: OptionData) => void, ms: number = 20):WordChart {
     const that = this

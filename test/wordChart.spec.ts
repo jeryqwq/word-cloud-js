@@ -1,3 +1,4 @@
+import { checkRepeat } from '../src/helper/utils'
 import WordChart from './../src/WordChart'
 describe("init instance for wordChart", () => {
   let temp = []
@@ -27,5 +28,24 @@ describe("init instance for wordChart", () => {
   test('max min value', () => {
     const val = instance.sortValue
     expect(val[val.length - 1].value === instance.maxValue).toBe(true)
+  })
+  test('word-cloud-item quantity', () => {
+    const { elWrap } = instance
+     expect(elWrap.childNodes.length).toBe(instance.value.length)
+  })
+  test('word-clout item location should not repeat', () => {
+    const { value } = instance
+    const isRepeated = new Array(...value).every((i, idx) => { // dom && dom compare location, every one sholud not repeat
+      const { el } = i
+      return value.reverse().every((j, idxj) => {
+        const { el: elJ } = j
+        const rectI = el.getBoundingClientRect()
+        if(j !== i) {
+          const rectJ = elJ.getBoundingClientRect()
+          return !checkRepeat(rectI, rectJ, 0)
+        }
+      })
+    })
+    expect(isRepeated).toBe(true)
   })
 })

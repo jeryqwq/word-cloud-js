@@ -1,5 +1,5 @@
 import { initParams, findLocation } from './scans';
-import { setColor } from './effets';
+import { renderToolTip, setColor } from './effets';
 import { rotate3D, move3D } from './animates'
 import WordChart from './WordChart';
 import { MODE, TEXT_ORIENTATION } from './helper/constant';
@@ -80,12 +80,12 @@ function exec (instance: WordChart, target: StandardType) {
 const forMove = { // 滚动模式
   scan: [initParams],
   animate: [move3D, rotate3D],
-  effect: [setColor],
+  effect: [setColor, renderToolTip],
   finally: []
 }
 const forStatic = { // 普通模式
   scan: [findLocation],
-  effect: [setColor],
+  effect: [setColor, renderToolTip],
   animate: [],
   finally: [suitLayout]
 }

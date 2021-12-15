@@ -1,7 +1,7 @@
 import { createTextNode } from './helper/genItem'
 import { checkRepeat, compareLocation, setElConfig } from './helper/utils'
 
-export const initParams = function(item: DataItem, index: number, instance: WordChart): MappingDataItem{
+export const initParams = function(item: DataItem, index: number, instance: WordChartBase): MappingDataItem{
   const { value: { length }, RADIUSX, RADIUSY } = instance
   const itemEl = createTextNode(item)
   const k = -1 + (2 * (index + 1) - 1) / length
@@ -22,7 +22,7 @@ export const initParams = function(item: DataItem, index: number, instance: Word
 }
 let domLocations: Array<DOMRect> = []
 
-export const findLocation =  function (item: DataItem, index: number,instance: WordChart) {
+export const findLocation =  function (item: DataItem, index: number,instance: WordChartBase) {
   let retx, rety
   const { width, height } = instance.elRect
   const el = createTextNode(item)
@@ -33,25 +33,16 @@ export const findLocation =  function (item: DataItem, index: number,instance: W
   const left = x + width / 2
   const top = y + height / 2
   setElConfig(el, instance.config)
-  // el.style.writingMode = item.direction ? 'tb' : ''
-  // // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
-  el.style.transform = `translate(${left}px, ${top}px)`
-  const rectObj = el.getBoundingClientRect().toJSON()
-    if(!domLocations.length) {  // 首次定位
+  // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
+    el.style.transform = `translate(${left}px, ${top}px)`
+    const rectObj = el.getBoundingClientRect().toJSON()
+    const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
+    if(!res) {
       domLocations.push(rectObj)
+      instance.layout = compareLocation(rectObj, instance.layout)
       retx = rectObj.x
       rety = rectObj.y
-      instance.layout = compareLocation(rectObj, instance.layout)
       break
-    }else{ // 冲突检测
-        const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
-        if(!res) {
-          domLocations.push(rectObj)
-          instance.layout = compareLocation(rectObj, instance.layout)
-          retx = rectObj.x 
-          rety = rectObj.y
-          break
-        }
     }
   }
   return {

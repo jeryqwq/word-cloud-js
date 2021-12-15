@@ -1,3 +1,5 @@
+import { MODE } from "./constant"
+
 export const compos = function<T, I>(...fns: Array<(_:I) => T | void>): (_: I) => T{ // 组合多个函数， 可多次重复继续组合
   return function(init: I): T { //  返回的函数需要和传入的函数类型保持一致, funtor
     return fns.reduce((a: any,b: Function ) => { // a 的值首次执行的时候为传入的init初始化的内容，之后为函数执行的返回值, 每次纯函数返回的值应该和其他组合函数的返回值保持一致
@@ -57,7 +59,7 @@ export const compareLocation = function (item: DOMRect, layout: WordChartLayout)
   ret.bottom = Math.max(item.bottom, layout.bottom)
   return ret
 }
-export const mergeOptions = function (a: Config, b: any) { // 两层浅克隆
+export const mergeOptions = function (a: Config, b: Record<string, any>) { // 两层浅克隆
   let ret: Config = {}
   for (const key  in b) {
     const element = b[key];
@@ -85,5 +87,8 @@ export const setElConfig = function(el: HTMLElement, config: Config) {
   config.borderWidth && (el.style.borderWidth = config.borderWidth + 'px')
   el.style.lineHeight = '1'
   config.padding && (el.style.padding = `${config.padding[0]}px ${config.padding[1]}px`)
-  config.animate && (el.classList.add('word-cloud-animate'))
+  if(config.mode === MODE.NORMAL) {
+    el.style.writingMode = Math.random() > 0.5 ? 'tb' : ''
+    // config.animate && (el.classList.add('word-cloud-animate'))
+  }
 }

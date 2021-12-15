@@ -8,7 +8,12 @@ export const TEXT_ORIENTATION = {
   HORIZONTAL: 0,
   VERTICAL: 1
 }
+export const MODE = {
+  SCROLL: 1,
+  NORMAL: 2
+}
 export const defaultOptions = {
+  mode: MODE.SCROLL,
   orientation: TEXT_ORIENTATION.HORIZONTAL,
   animate: true,
   colors: ["#ff9ecc", "#00b6ff", "#f3bd00", "#884dff", "#d3f0ff ", "#5cc4ee", "#eadf2b", "#e1583e", "#05e1b5", "#3e61e1", "#884dff", "#c59eff", "#06b8d1"],
@@ -18,8 +23,16 @@ export const defaultOptions = {
   borderWidth: 0,
   backgroundColor: "rgba(16,22,24,0)",
   padding: [1, 1],
+  events: {
+    click: (item: MappingDataItem, instance: WordChartBase) => {
+      console.log(item, '----')
+    }
+  },
   tooltip: {
     show: true,
+    // render(item: MappingDataItem, el: HTMLElement) {
+    //   return `<span style="color: red">${item.name}</span>`
+    // },
     padding: [15, 35],
     backgroundColor: 'rgba(50,50,50,0.7)',
     borderRadius: 0,
@@ -37,8 +50,4 @@ export const defaultOptions = {
     extraCssText: "",
     tooltipEditor:''
   }
-}
-export const MODE = {
-  SCROLL: 1,
-  NORMAL: 2
 }

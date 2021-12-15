@@ -1,5 +1,5 @@
 import { DIRECTION } from "./constant"
-export const rotateX = function (item: MappingDataItem, instance: WordChart){
+export const rotateX = function (item: MappingDataItem, instance: WordChartBase){
   const angleX = [DIRECTION.RIGHT2LEFT, DIRECTION.LEFT2RIGHT].includes(instance.DIRECTION)
   ? Math.PI / Infinity
   : Math.PI / ((Number(instance.DIRECTION) / 2) * Number(instance.speed))
@@ -14,7 +14,7 @@ export const rotateX = function (item: MappingDataItem, instance: WordChart){
     z: z1,
   }
 }
-export const rotateY = function (item: MappingDataItem, instance: WordChart) {
+export const rotateY = function (item: MappingDataItem, instance: WordChartBase) {
   const angleY = [DIRECTION.BOTTOM2TOP, DIRECTION.TOP2BOTTOM].includes(instance.DIRECTION)
   ? Math.PI / Infinity
   : Math.PI / (Number(instance.DIRECTION) * Number(instance.speed))
@@ -30,7 +30,7 @@ export const rotateY = function (item: MappingDataItem, instance: WordChart) {
     }
 }
 
-export const move = function (item: MappingDataItem, instance: WordChart) {
+export const move = function (item: MappingDataItem, instance: WordChartBase) {
   const { elRect } = instance
   const { width, height } = elRect
   const CX = width / 2

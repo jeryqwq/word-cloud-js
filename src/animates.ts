@@ -1,7 +1,7 @@
 import { rotateX, rotateY, move } from "./helper/animate";
 
 // animate 
-export const move3D = function(tempArr: OptionData, instance: WordChart) {
+export const move3D = function(tempArr: OptionData, instance: WordChartBase) {
   tempArr.forEach(i => {
     const { el } = i as MappingDataItem
     const { transform, opacity, zIndex} = move(i as MappingDataItem , instance)
@@ -10,7 +10,7 @@ export const move3D = function(tempArr: OptionData, instance: WordChart) {
     el.style.zIndex = zIndex + ''
   })
 }
-export const rotate3D = function(tempArr: OptionData, instance: WordChart) {
+export const rotate3D = function(tempArr: OptionData, instance: WordChartBase) {
     tempArr.forEach(item => {
       const {z, y} = rotateX(item as MappingDataItem, instance)
       item.z = z 
