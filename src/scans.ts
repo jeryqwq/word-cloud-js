@@ -29,7 +29,8 @@ export const findLocation =  function (_: ScanParams): MappingDataItem {
   const el = createTextNode(item)
   const per = (item.value / instance.maxValue)
   el.style.fontSize = instance.getValue(per) + 'px'
-  for( let i = prevIndex; i <= (width + height)/ 2; i++) {
+    // console.time(`item-${item.name}`)
+    for( let i = prevIndex; i <= (width + height)/ 2; i++) {
       instance.elWrap.appendChild(el)
       const [x, y] = instance.getSpiral(i * 5)
       const left = x + width / 2
@@ -39,14 +40,16 @@ export const findLocation =  function (_: ScanParams): MappingDataItem {
       el.style.transform = `translate(${left}px, ${top}px)`
       const rectObj = el.getBoundingClientRect().toJSON()
       const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
-      if(!res) {
-        domLocations.push(rectObj)
-        instance.layout = compareLocation(rectObj, instance.layout)
-        prevIndex = prevIndex// 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-        item.x = rectObj.x
-        item.y = rectObj.y
+        if(!res) {
+          domLocations.push(rectObj)
+          instance.layout = compareLocation(rectObj, instance.layout)
+          prevIndex = prevIndex// 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
+          item.x = rectObj.x
+          item.y = rectObj.y
+          break
+        }
       }
-    }
+    // console.timeEnd(`item-${item.name}`)
   return {
     ...item,
     el
