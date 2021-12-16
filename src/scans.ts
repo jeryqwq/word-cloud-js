@@ -27,31 +27,28 @@ export const findLocation =  function (_: ScanParams): MappingDataItem {
   const { item, index, instance } = _; 
   const { width, height } = instance.elRect
   const el = createTextNode(item)
-  el.style.fontSize = instance.getValue(item.value / instance.maxValue) + 'px'
-  let retx, rety
+  const per = (item.value / instance.maxValue)
+  el.style.fontSize = instance.getValue(per) + 'px'
   for( let i = prevIndex; i <= (width + height)/ 2; i++) {
-  instance.elWrap.appendChild(el)
-  const [x, y] = instance.getSpiral(i * 5)
-  const left = x + width / 2
-  const top = y + height / 2
-  setElConfig(el, instance.config)
-  // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
-  el.style.transform = `translate(${left}px, ${top}px)`
-  const rectObj = el.getBoundingClientRect().toJSON()
-  const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
-    if(!res) {
-      domLocations.push(rectObj)
-      instance.layout = compareLocation(rectObj, instance.layout)
-      prevIndex = prevIndex// 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-      retx = rectObj.x
-      rety = rectObj.y
-      break
+      instance.elWrap.appendChild(el)
+      const [x, y] = instance.getSpiral(i * 5)
+      const left = x + width / 2
+      const top = y + height / 2
+      setElConfig(el, instance.config)
+      // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
+      el.style.transform = `translate(${left}px, ${top}px)`
+      const rectObj = el.getBoundingClientRect().toJSON()
+      const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
+      if(!res) {
+        domLocations.push(rectObj)
+        instance.layout = compareLocation(rectObj, instance.layout)
+        prevIndex = prevIndex// 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
+        item.x = rectObj.x
+        item.y = rectObj.y
+      }
     }
-  }
   return {
     ...item,
-    x: retx,
-    y: rety,
     el
   }
 }

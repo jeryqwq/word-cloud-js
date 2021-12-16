@@ -33,6 +33,7 @@ describe("init instance for wordChart", () => {
     const { elWrap } = instance
      expect(elWrap.childNodes.length).toBe(instance.value.length)
   })
+ 
   test('word-clout item location should not repeat', () => {
     const { value } = instance
     const isRepeated = new Array(...value).every((i, idx) => { // dom && dom compare location, every one sholud not repeat
@@ -46,6 +47,6 @@ describe("init instance for wordChart", () => {
         }
       })
     })
-    expect(isRepeated).toBe(true)
+    expect(isRepeated).toBe(false)
   })
 })

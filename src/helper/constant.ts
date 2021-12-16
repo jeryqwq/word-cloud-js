@@ -19,7 +19,7 @@ export const defaultOptions = {
   animate: true, // 是否开启普通模式的动画
   colors: ["#ff9ecc", "#00b6ff", "#f3bd00", "#884dff", "#d3f0ff ", "#5cc4ee", "#eadf2b", "#e1583e", "#05e1b5", "#3e61e1", "#884dff", "#c59eff", "#06b8d1"],
   sizeRange: [12, 24], // 文字大小
-  gridSize: 5, //字符间隔 (不包含padding)
+  gridSize: 0, //字符间隔 (不包含padding)
   borderColor: "rgba(105,207,255)", // 单项的css配置
   borderWidth: 0,
   backgroundColor: "rgba(16,22,24,0)",

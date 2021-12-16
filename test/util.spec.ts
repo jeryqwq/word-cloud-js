@@ -1,4 +1,4 @@
-import { compos, rangMapping, throttle } from '../src/helper/utils';
+import { checkRepeat, compos, rangMapping, throttle } from '../src/helper/utils';
 
 
 describe("compos test", () => {
@@ -57,5 +57,45 @@ describe('throttle fn for animate', () => {
       }, 1000);
     })
     expect(res).toBe(1)
+  })
+})
+describe('shape repeat', () => {
+  test('tow square should not repeat ', () => {
+    const rect1 = {
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 40,
+      bottom: 40
+    } as DOMRect
+    const rect2 = {
+      x: 41,
+      y: 41,
+      left: 41,
+      top: 41,
+      right: 60,
+      bottom: 60
+    } as DOMRect
+    expect(checkRepeat(rect1, [rect2], 0)).toBe(false)
+  })
+  test('tow square should repeat ', () => {
+    const rect1 = {
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 40,
+      bottom: 40
+    } as DOMRect
+    const rect2 = {
+      x: 39,
+      y: 39,
+      left: 39,
+      top: 39,
+      right: 60,
+      bottom: 60
+    } as DOMRect
+    expect(checkRepeat(rect1, [rect2], 0)).toBe(true)
   })
 })
