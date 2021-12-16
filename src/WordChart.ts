@@ -7,14 +7,14 @@ class WordChart implements WordChartBase {
   effectComposFn?: (_: ScanItemType) => void; // 组合effect
   animateComposFn?:(_: OptionData) => void; // 组合animate动画
   finallyComposFn?:(instance: WordChart) => void;
-  el: HTMLElement;
+  el: HTMLElement
   elWrap: HTMLElement
   getValue: (val: number) => number
-  sortValue: OptionData;
-  maxValue: number;
-  elRect: DOMRect;
-  RADIUSX: number;
-  RADIUSY: number;
+  sortValue: OptionData
+  maxValue: number
+  elRect: DOMRect
+  RADIUSX: number
+  RADIUSY: number
   DIRECTION: number
   config: Config
   speed: number
@@ -46,12 +46,17 @@ class WordChart implements WordChartBase {
     this.el.appendChild(this.toolTipEl)
     this.clearActive = throttle(this.clearActive, 300)
     this.setActive = throttle(this.setActive, 100)
+    this.el.addEventListener('mouseout', this.clearActive)
     this.layout = {
       left: Infinity,
       top: Infinity,
       bottom: 0,
       right: 0
     }
+  }
+  destory () {
+    this.el.removeEventListener('mouseout', this.clearActive)
+    this.el.removeChild(this.elWrap)
   }
   trigger() {
     this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
@@ -84,11 +89,11 @@ class WordChart implements WordChartBase {
         console.error(`the render function should return a HTMLElement or Html String, not a ${context.constructor.toString()}`)
       }
     }else{ // use setting
+      this.toolTipEl.style.padding = '5px 10px'
       this.toolTipEl.style.backgroundColor = 'rgb(105, 207, 255)'
+      this.toolTipEl.style.borderRadius = '5px'
       this.toolTipEl.textContent = `${item.name}: ${item.value}`
-
     }
-
   }
   animate(fn: (_: OptionData) => void, ms: number = 20):WordChart {
     const that = this

@@ -1,4 +1,4 @@
-import { MODE } from "./constant"
+import { MODE, TEXT_ORIENTATION } from "./constant"
 
 export const compos = function<T, I>(...fns: Array<(_:I) => T | void>): (_: I) => T{ // 组合多个函数， 可多次重复继续组合
   return function(init: I): T { //  返回的函数需要和传入的函数类型保持一致, funtor
@@ -37,7 +37,6 @@ export function archimedeanSpiral(size: Array<number>, { step = 0.1, b = 5, a = 
     return [e * (a + b * (t *= step)) * Math.cos(t), (a + b * t) * Math.sin(t)];
   };
 }
-
 export const checkRepeat = function (curLoc: DOMRect, wordDown: Array<DOMRect>, gridNumber: number):boolean {
   for(let i = 0; i < wordDown.length; i++) {
     const matchLoc = wordDown[i]
@@ -50,7 +49,6 @@ export const checkRepeat = function (curLoc: DOMRect, wordDown: Array<DOMRect>, 
   }
   return false
 }
-
 export const compareLocation = function (item: DOMRect, layout: WordChartLayout) {
   let ret: WordChartLayout = { ...layout };
   ret.left = Math.min(item.left, layout.left)
@@ -64,7 +62,7 @@ export const mergeOptions = function (a: Config, b: Record<string, any>) { // �
   for (const key  in b) {
     const element = b[key];
     const con = element.constructor
-    if(con === Number || con === String) {
+    if(con === Number || con === String || con === Boolean) {
       ret[key] = element
     }else{
       ret[key] = Array.isArray(element) ? new con(...element) : {...element}
@@ -73,7 +71,7 @@ export const mergeOptions = function (a: Config, b: Record<string, any>) { // �
   for (const key in a) {
     const element = a[key];
     const con = element.constructor
-    if(con === Number || con === String) {
+    if(con === Number || con === String || con === Boolean) {
       ret[key] = element
     }else{
       ret[key] = Array.isArray(element) ? new con(...element) : {...element}
@@ -88,7 +86,63 @@ export const setElConfig = function(el: HTMLElement, config: Config) {
   el.style.lineHeight = '1'
   config.padding && (el.style.padding = `${config.padding[0]}px ${config.padding[1]}px`)
   if(config.mode === MODE.NORMAL) {
-    el.style.writingMode = Math.random() > 0.5 ? 'tb' : ''
-    // config.animate && (el.classList.add('word-cloud-animate'))
+    const { orientation } = config
+    el.style.writingMode = orientation === TEXT_ORIENTATION.HORIZONTAL ? 'tb' : orientation === TEXT_ORIENTATION.VERTICAL ? '' : Math.random() > 0.5 ? 'tb' : ''
+    config.animate && (el.classList.add('word-cloud-animate'))
   }
+}
+export const appendCss = function() {
+  if(window['content-for-word-cloud' as any]) return
+  const el = document.createElement('style')
+  el.id = 'content-for-word-cloud'
+  el.innerHTML = `.word-cloud-item-chencc{
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    color: green;
+    text-decoration: none;
+    font-size: 15px;
+    font-family: '微软雅黑';
+    font-weight: bold;
+    cursor: pointer;
+    transition:  all .3s;
+    border: solid;
+    border-width: 0;
+  }
+  @keyframes word {
+    0% {
+      opacity: 0.5;
+    }
+    3% {
+      opacity: 1;
+    }
+    9% {
+      opacity: 1;
+    }
+    12% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0.5;
+    }
+  }
+  .word-cloud-animate {
+    animation-name: word;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    will-change: opacity;
+    opacity: 0.5;
+  }
+
+  .word-cloud-animate:nth-child(3n + 1) {
+    animation-delay: 0s;
+  }
+  .word-cloud-animate:nth-child(3n + 2) {
+    animation-delay: 3s;
+  }
+  .word-cloud-animate:nth-child(3n + 3) {
+    animation-delay: 6s;
+  }`
+  document.body.appendChild(el)
 }

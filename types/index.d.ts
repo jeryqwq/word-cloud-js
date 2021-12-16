@@ -1,3 +1,4 @@
+
 declare type WordItemAfter = {
   per: number,
   text: string
@@ -49,9 +50,10 @@ declare type DataItem = { value: number, name: string ,  x?: number,
 declare type OptionData = Array<DataItem>
 declare type ScanItemType = {item: DataItem, index: number, instance: WordChart}
 declare type Options = {
-  el: any,
+  el: HTMLElement,
   data: OptionData,
-  config: Config
+  config: Config,
+  hooks?: Hooks
 }
 interface WordChartBase {
   getValue: (_: number) => number,
@@ -70,7 +72,8 @@ interface WordChartBase {
   layout: WordChartLayout,
   setActive: (item: MappingDataItem, el: HTMLElement, e: MouseEvent) => void
   clearActive: Function
-  active?: Active
+  active?: Active,
+  destory: Function
 }
 declare type MappingDataItem = {
   x: number,
@@ -95,7 +98,7 @@ declare type DomLocation = {
   right: number,
   bottom: number
 }
-declare type ScanParams = {item: DataItem, index: number, instance: Worker}
+declare type ScanParams = {item: MappingDataItem, index: number, instance: WordChartBase}
 declare type StandardType = {
   [key: string]: Array<Function>
 }
@@ -108,4 +111,10 @@ declare type WordChartLayout = {
 declare type Active = {
   item?: MappingDataItem,
   el?: HTMLElement
+}
+declare type Hooks = {
+  scan?: (...args: Array<DataItem, number, WordChartBase>) => args
+  animate?: (_: OptionData) => void
+  effect?: (_: ScanItemType) => void
+  finally?: (_: WordChartBase) => void
 }

@@ -17,10 +17,12 @@ export const renderToolTip = function(item: MappingDataItem, index: number, inst
       })
     })
   }
-  el.addEventListener('mouseenter', (e) => {
-    instance.setActive(item, el, e)
-  })
-  el.addEventListener('mouseleave', () => {
-    instance.clearActive()
-  })
+  if(config.tooltip?.show) {
+    el.addEventListener('mouseenter', (e) => {
+      instance.setActive(item, el, e)
+    })
+    el.addEventListener('mouseleave', () => {
+      instance.clearActive()
+    })
+  }
 }
