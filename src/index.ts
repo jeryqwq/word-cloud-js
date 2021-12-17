@@ -15,26 +15,26 @@ for (let index = 0; index < 100; index++) {
   })
 }
 
-const config = {
-  el: document.querySelector('#app') as HTMLElement || document.body,
-  data: temp,
-  config: {
-    mode: MODE.SCROLL,
-  },
-  hooks: {
-    // scan: (_: ScanParams) => {
-    //   console.log(_)
-    //   return _
-    // },
-    // effect: (_: MappingDataItem) => {
-    //   console.log(_, '-effect')
-    // },
-    finally: (_: WordChartBase) => {
-      console.log(_, '---')
-    }
-  }
-}
-function init (config: Options) {
+// const config = {
+//   el: document.querySelector('#app') as HTMLElement || document.body,
+//   data: temp,
+//   config: {
+//     mode: MODE.SCROLL,
+//   },
+//   hooks: {
+//     // scan: (_: ScanParams) => {
+//     //   console.log(_)
+//     //   return _
+//     // },
+//     // effect: (_: MappingDataItem) => {
+//     //   console.log(_, '-effect')
+//     // },
+//     finally: (_: WordChartBase) => {
+//       console.log(_, '---')
+//     }
+//   }
+// }
+export  function init (config: Options) {
   const instance = WordChart.of(config)  // 类实例
   const mode = instance?.config?.mode
   const { hooks } = config
@@ -106,5 +106,7 @@ const forStatic = { // 普通模式
   animate: [],
   finally: [suitLayout]
 }
-init(config)
-init({...config, el: document.querySelector('#app2') || document.body, config: { mode: MODE.NORMAL }})
+// init(config)
+// init({...config, el: document.querySelector('#app2') || document.body, config: { mode: MODE.NORMAL }})
+export const ORIENTATION = TEXT_ORIENTATION
+export const RENDER_MODE = MODE

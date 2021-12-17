@@ -1,6 +1,6 @@
 import { MODE, TEXT_ORIENTATION } from "./constant"
 
-export const compos = function<T, I>(...fns: Array<(_:I) => T | void>): (_: I) => T{ // 组合多个函数， 可多次重复继续组合
+export const compos = function<T, I>(...fns: Array<(_:I) => T | Promise<T> |void>): (_: I) => T{ // 组合多个函数， 可多次重复继续组合
   return function(init: I): T { //  返回的函数需要和传入的函数类型保持一致, funtor
     return fns.reduce((a: any,b: Function ) => { // a 的值首次执行的时候为传入的init初始化的内容，之后为函数执行的返回值, 每次纯函数返回的值应该和其他组合函数的返回值保持一致
       return b(a || init)
@@ -100,7 +100,7 @@ export const appendCss = function() {
     position: absolute;
     left: 0px;
     top: 0px;
-    color: green;
+    color: white;
     text-decoration: none;
     font-size: 15px;
     font-family: '微软雅黑';

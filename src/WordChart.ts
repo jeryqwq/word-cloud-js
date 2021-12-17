@@ -3,7 +3,7 @@ import { DIRECTION, defaultOptions } from './helper/constant'
 import { mergeOptions } from './helper/utils';
 class WordChart implements WordChartBase {
   value: OptionData;
-  composFn?: (_: ScanItemType) => DataItem; // 组合scan
+  composFn?: (_: ScanItemType) => DataItem | Promise<DataItem>; // 组合scan
   effectComposFn?: (_: ScanItemType) => void; // 组合effect
   animateComposFn?:(_: OptionData) => void; // 组合animate动画
   finallyComposFn?:(instance: WordChart) => void;
@@ -58,8 +58,17 @@ class WordChart implements WordChartBase {
     this.el.removeEventListener('mouseout', this.clearActive)
     this.el.removeChild(this.elWrap)
   }
-  trigger() {
-    this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
+  async trigger() {
+    // this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)
+    for(let i = 0; i < this.value.length; i++) { // 处理异步任务
+      const item = this.value[i]
+      const res = this.composFn && this.composFn({item, index: i, instance: this})
+      if(res instanceof Promise) {
+        this.value[i] = await res
+      }else{
+        this.value[i] = res as DataItem
+      }
+    }
     this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
     this.animateComposFn && this.animateComposFn(this.value)
     setTimeout(() => {
@@ -121,7 +130,7 @@ class WordChart implements WordChartBase {
     }
     return this
   }
-  scan(fn: (_: ScanItemType) => DataItem): WordChart{
+  scan(fn: (_: ScanItemType) => DataItem | Promise<DataItem>): WordChart{
     if(this.composFn) {
       this.composFn = compos<DataItem, ScanItemType>(this.composFn, fn)
     }else{
