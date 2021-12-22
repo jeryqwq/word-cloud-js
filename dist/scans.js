@@ -23,6 +23,7 @@ export const findLocation = function (_) {
     const { width, height } = instance.elRect;
     const el = createTextNode(item);
     const per = (item.value / instance.maxValue);
+    item.per = per;
     el.style.fontSize = instance.getValue(per) + 'px';
     // return new Promise((resolve, reject) => {
     //   let i = prevIndex
@@ -67,7 +68,7 @@ export const findLocation = function (_) {
         if (!res) {
             domLocations.push(rectObj);
             instance.layout = compareLocation(rectObj, instance.layout);
-            prevIndex = i / 2; // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
+            prevIndex = i / 1.5; // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
             item.x = rectObj.x;
             item.y = rectObj.y;
             break;

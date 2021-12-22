@@ -55,8 +55,8 @@ class WordChart {
         this.DIRECTION = DIRECTION.LEFT2RIGHT;
         this.config = mergeOptions(options.config, defaultOptions) || {};
         this.speed = this.config.speed || 200;
-        this.getSpiral = archimedeanSpiral([width, height], { b: width / 100 });
-        this.getValue = rangMapping([0, 1], this.config.sizeRange || [12, 24]);
+        this.getSpiral = archimedeanSpiral([width, height]);
+        this.getValue = rangMapping([0, 1], [this.config.sizeMin || 12, this.config.sizeMax || 24]);
         this.elWrap = document.createElement('div');
         this.elWrap.style.width = '100%';
         this.elWrap.style.height = '100%';

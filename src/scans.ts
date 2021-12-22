@@ -22,7 +22,7 @@ export const initParams = function(_: ScanParams): MappingDataItem{
   }
 }
 let domLocations: Array<DOMRect> = []
-let prevIndex = 0
+let prevIndex = 0, cacheRes = {}, checkedCache: Array<{ x:number, y: number, width: number, height: number }> = []
 export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> | MappingDataItem {
   const { item, index, instance } = _
   const { width, height } = instance.elRect
@@ -42,19 +42,27 @@ export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> 
   //       // // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
   //       el.style.transform = `translate(${left}px, ${top}px)`
   //       const rectObj = el.getBoundingClientRect().toJSON()
-  //       const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
-  //       if(!res) {
-  //         domLocations.push(rectObj)
-  //         instance.layout = compareLocation(rectObj, instance.layout)
-  //         prevIndex = i / 2 // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-  //         item.x = rectObj.x
-  //         item.y = rectObj.y
-  //         resolve({
-  //           ...item,
-  //           el
-  //         })
-  //       }else{
+  //       if(checkedCache.some(i => (Math.abs(i.x - x) < i.width / 2) && Math.abs(i.y - y) < i.height / 2)){ 
+  //         i++
   //         scheduler()
+  //       }else{
+  //         const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
+  //         if(!res) {
+  //           domLocations.push(rectObj)
+  //           instance.layout = compareLocation(rectObj, instance.layout)
+  //           checkedCache.push({ // 缓存被占用的记录
+  //             x, y, width: rectObj.width, height: rectObj.height
+  //           })
+  //           prevIndex = i / 2 // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
+  //           item.x = rectObj.x
+  //           item.y = rectObj.y
+  //           resolve({
+  //             ...item,
+  //             el
+  //           })
+  //         }else{
+  //           scheduler()
+  //         }
   //       }
   //     })
   //   }()
@@ -63,16 +71,25 @@ export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> 
     // console.time(`item-${item.name}`)
 
     for( let i = prevIndex; i <= (width + height)/ 2; i++) {
-      instance.elWrap.appendChild(el)
       const [x, y] = instance.getSpiral(i * 5)
+      instance.elWrap.appendChild(el)
+      // if(checkedCache[`${x}-${y}`]) {continue} // 跳过已经命中过的坐标的
       const left = x + width / 2
       const top = y + height / 2
       setElConfig(el, instance.config)
       // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
       el.style.transform = `translate(${left}px, ${top}px)`
       const rectObj = el.getBoundingClientRect().toJSON()
+      // 检查坐标是否在已布局的元素范围内， 在的话直接跳过
+      if(checkedCache.some(i => (Math.abs(i.x - x) < i.width / 2) && Math.abs(i.y - y) < i.height / 2)){ 
+        i+= 5
+        continue
+      }
       const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
         if(!res) {
+          checkedCache.push({ // 缓存被占用的记录
+            x, y, width: rectObj.width, height: rectObj.height
+          })
           domLocations.push(rectObj)
           instance.layout = compareLocation(rectObj, instance.layout)
           prevIndex = i / 1.5// 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
