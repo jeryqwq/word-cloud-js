@@ -5,35 +5,8 @@ import WordChart from './WordChart';
 import { MODE, TEXT_ORIENTATION } from './helper/constant';
 import { suitLayout } from './finally';
 import { appendCss } from './helper/utils';
-const temp = []
-const words = ['这根本就不好玩', '再见', 'MDML在线测试', '深入浅出CSS3', 'React测试', '这就是个文字内容', '高刷屏' , '默认触发间隔', '假如我说假如', '发现越来越多的美好', '小惊喜', '不会只有我', '哦次打次', '客气客气']
-for (let index = 0; index < 100; index++) {
-  const item = words[index]
-  temp.push({
-    value: Math.floor(Math.random() * 1000),
-    name: item || `test-${index}`
-  })
-}
 
-// const config = {
-//   el: document.querySelector('#app') as HTMLElement || document.body,
-//   data: temp,
-//   config: {
-//     mode: MODE.SCROLL,
-//   },
-//   hooks: {
-//     // scan: (_: ScanParams) => {
-//     //   console.log(_)
-//     //   return _
-//     // },
-//     // effect: (_: MappingDataItem) => {
-//     //   console.log(_, '-effect')
-//     // },
-//     finally: (_: WordChartBase) => {
-//       console.log(_, '---')
-//     }
-//   }
-// }
+
 export  function init (config: Options) {
   const instance = WordChart.of(config)  // 类实例
   const mode = instance?.config?.mode
@@ -44,9 +17,7 @@ export  function init (config: Options) {
     exec(instance, hooks ? mergeHooks(hooks, forStatic) : forStatic)
   }
   appendCss()
-  console.time('render')
   instance.trigger()
-  console.timeEnd('render')
   return instance
 }
 function mergeHooks (hooks: Hooks, targetMode: StandardType): StandardType {
@@ -106,7 +77,6 @@ const forStatic = { // 普通模式
   animate: [],
   finally: [suitLayout]
 }
-// init(config)
-// init({...config, el: document.querySelector('#app2') || document.body, config: { mode: MODE.NORMAL }})
+
 export const ORIENTATION = TEXT_ORIENTATION
 export const RENDER_MODE = MODE

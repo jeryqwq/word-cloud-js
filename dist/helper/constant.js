@@ -18,16 +18,17 @@ export const defaultOptions = {
     orientation: TEXT_ORIENTATION.RANDOM,
     animate: true,
     colors: ["#ff9ecc", "#00b6ff", "#f3bd00", "#884dff", "#d3f0ff ", "#5cc4ee", "#eadf2b", "#e1583e", "#05e1b5", "#3e61e1", "#884dff", "#c59eff", "#06b8d1"],
-    sizeRange: [12, 24],
+    sizeMin: 12,
+    sizeMax: 24,
     gridSize: 0,
     borderColor: "rgba(105,207,255)",
     borderWidth: 0,
     backgroundColor: "rgba(16,22,24,0)",
     padding: [1, 1],
-    events: {
-        click: (item, instance) => {
-            console.log(item, '----');
-        }
+    events: { // 自定义事件
+    // click: (item: MappingDataItem, instance: WordChartBase) => {
+    //   console.log(item, '----')
+    // }
     },
     tooltip: {
         show: true,

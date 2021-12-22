@@ -34,12 +34,13 @@ class WordChart implements WordChartBase {
     this.DIRECTION = DIRECTION.LEFT2RIGHT
     this.config = mergeOptions(options.config, defaultOptions) || {}
     this.speed = this.config.speed || 200
-    this.getSpiral = archimedeanSpiral([width, height], {b: width / 100})
-    this.getValue = rangMapping([0, 1], this.config.sizeRange as [number, number] || [12, 24])
+    this.getSpiral = archimedeanSpiral([width, height])
+    this.getValue = rangMapping([0, 1], [this.config.sizeMin || 12, this.config.sizeMax || 24])
     this.elWrap = document.createElement('div')
     this.elWrap.style.width = '100%'
     this.elWrap.style.height = '100%'
     this.el.appendChild(this.elWrap)
+    this.el.style.position = 'relative'
     this.toolTipEl = document.createElement('div')
     this.toolTipEl.style.position = 'fixed'
     this.toolTipEl.style.transition = 'all .4s'
@@ -66,7 +67,7 @@ class WordChart implements WordChartBase {
       if(res instanceof Promise) {
         this.value[i] = await res
       }else{
-        this.value[i] = res as DataItem
+        this.value[i] = res as MappingDataItem
       }
     }
     this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})

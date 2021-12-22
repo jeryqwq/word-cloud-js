@@ -61,6 +61,7 @@ class WordChart {
         this.elWrap.style.width = '100%';
         this.elWrap.style.height = '100%';
         this.el.appendChild(this.elWrap);
+        this.el.style.position = 'relative';
         this.toolTipEl = document.createElement('div');
         this.toolTipEl.style.position = 'fixed';
         this.toolTipEl.style.transition = 'all .4s';

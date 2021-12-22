@@ -3,7 +3,7 @@ import livereload from 'rollup-plugin-livereload'
 import serve from 'rollup-plugin-serve'
 
 export default {
-  input: 'src/index.ts',
+  input: 'src/dev.ts',
   output: {
     dir: 'dist',
     format: 'umd',
@@ -13,8 +13,8 @@ export default {
     extend: true
   },
   plugins: [
-    typescript(),
-    serve({contentBase: '', port: 7777}),
-    // livereload()
+      typescript(),
+      serve({contentBase: '', port: 7777}),
+      livereload()
     ]
 }

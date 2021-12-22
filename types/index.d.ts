@@ -8,10 +8,12 @@ declare type Config = {
   spiralLimit?: number,
   font?: "sans-serif",
   sizeRange?:{[key: 0 | 1]: number },
+  sizeMax?: number,
+  sizeMin?: number,
   renderFn?: (item: WordItemAfter) => HTMLElement
   speed?: number,
-  colors?: Array[string],
-  sizeRange?: [12, 24],
+  color?: Array[string],
+  colors?:Array<{from: number, to: number, color: string, name: string}>
   gridSize?: 27, //字符间隔
   borderColor?: "rgba(105,207,255)",
   borderWidth?: 2,
@@ -81,7 +83,8 @@ declare type MappingDataItem = {
   z?: number, // 仅滚动
   value: number,
   name: string,
-  el: HTMLElement
+  el: HTMLElement,
+  per: number
 }
 const DIRECTION = {
   RIGHT2LEFT = 1,

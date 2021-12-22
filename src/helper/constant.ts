@@ -4,6 +4,10 @@ export const DIRECTION = {
   TOP2BOTTOM: 2,
   BOTTOM2TOP: -2
 }
+export const COLOR_MODE = {
+  RANGE: 'RANGE', // 根据值范围渲染颜色
+  INDEX: 'INDEX' // 根据下标索引渲染颜色
+}
 export const TEXT_ORIENTATION = {
   HORIZONTAL: 0, // 横向
   VERTICAL: 1, // 竖
@@ -14,20 +18,37 @@ export const MODE = {
   NORMAL: 2
 }
 export const defaultOptions = {
-  mode: MODE.SCROLL, // 模式 ， 滚动 ｜ 普通
+  mode: MODE.NORMAL, // 模式 ， 滚动 ｜ 普通
   orientation: TEXT_ORIENTATION.RANDOM, // 方向
   animate: true, // 是否开启普通模式的动画
-  colors: ["#ff9ecc", "#00b6ff", "#f3bd00", "#884dff", "#d3f0ff ", "#5cc4ee", "#eadf2b", "#e1583e", "#05e1b5", "#3e61e1", "#884dff", "#c59eff", "#06b8d1"],
-  sizeRange: [12, 24], // 文字大小
+  color: ["#ff9ecc", "#00b6ff", "#f3bd00", "#884dff", "#d3f0ff ", "#5cc4ee", "#eadf2b", "#e1583e", "#05e1b5", "#3e61e1", "#884dff", "#c59eff", "#06b8d1"],
+  colors: [{
+    from: 0,
+    to: 60,
+    name: '差',
+    color: 'red'
+  }, {
+    from: 61,
+    to: 79,
+    name: '良',
+    color: 'blue'
+  },{
+    from: 80,
+    to: 100,
+    name: '优秀',
+    color: 'green'
+  }],
+  sizeMin: 12,
+  sizeMax: 24,
   gridSize: 0, //字符间隔 (不包含padding)
   borderColor: "rgba(105,207,255)", // 单项的css配置
   borderWidth: 0,
   backgroundColor: "rgba(16,22,24,0)",
   padding: [1, 1], // 单项的padding属性
   events: { // 自定义事件
-    click: (item: MappingDataItem, instance: WordChartBase) => {
-      console.log(item, '----')
-    }
+    // click: (item: MappingDataItem, instance: WordChartBase) => {
+    //   console.log(item, '----')
+    // }
   },
   tooltip: {
     show: true,

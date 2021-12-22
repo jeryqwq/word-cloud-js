@@ -1,10 +1,9 @@
 
 (function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.wordCloud = global.wordCloud || {}));
-})(this, (function (exports) { 'use strict';
+(function (factory) {
+    typeof define === 'function' && define.amd ? define(factory) :
+    factory();
+})((function () { 'use strict';
 
     const DIRECTION = {
         RIGHT2LEFT: 1,
@@ -685,13 +684,38 @@
         animate: [],
         finally: [suitLayout]
     };
-    const ORIENTATION = TEXT_ORIENTATION;
     const RENDER_MODE = MODE;
 
-    exports.ORIENTATION = ORIENTATION;
-    exports.RENDER_MODE = RENDER_MODE;
-    exports.init = init;
-
-    Object.defineProperty(exports, '__esModule', { value: true });
+    const temp = [];
+    const words = ['这根本就不好玩', '再见', 'MDML在线测试', '深入浅出CSS3', 'React测试', '这就是个文字内容', '高刷屏', '默认触发间隔', '假如我说假如', '发现越来越多的美好', '小惊喜', '不会只有我', '哦次打次', '客气客气'];
+    for (let index = 0; index < 25; index++) {
+        const item = words[index];
+        temp.push({
+            value: Math.floor(Math.random() * 100),
+            name: item || `test-${index}`
+        });
+    }
+    const config = {
+        el: document.querySelector('#app') || document.body,
+        data: temp,
+        config: {
+            mode: MODE.SCROLL,
+            colorMode: COLOR_MODE.RANGE
+        },
+        hooks: {
+        // scan: (_: ScanParams) => {
+        //   console.log(_)
+        //   return _
+        // },
+        // effect: (_: MappingDataItem) => {
+        //   console.log(_, '-effect')
+        // },
+        // finally: (_: WordChartBase) => {
+        //   console.log(_, '---')
+        // }
+        }
+    };
+    init(config);
+    init(Object.assign(Object.assign({}, config), { el: document.querySelector('#app2') || document.body, config: { mode: RENDER_MODE.NORMAL } }));
 
 }));
