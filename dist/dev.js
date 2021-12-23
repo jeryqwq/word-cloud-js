@@ -46,12 +46,12 @@
                 color: 'green'
             }],
         sizeMin: 12,
-        sizeMax: 24,
+        sizeMax: 16,
         gridSize: 0,
         borderColor: "rgba(105,207,255)",
         borderWidth: 0,
         backgroundColor: "rgba(16,22,24,0)",
-        padding: [1, 1],
+        padding: [0, 0],
         events: { // 自定义事件
         // click: (item: MappingDataItem, instance: WordChartBase) => {
         //   console.log(item, '----')
@@ -171,6 +171,7 @@
         config.backgroundColor && (el.style.backgroundColor = config.backgroundColor);
         config.borderColor && (el.style.borderColor = config.borderColor);
         config.borderWidth && (el.style.borderWidth = config.borderWidth + 'px');
+        config.font && (el.style.borderWidth = config.font);
         el.style.lineHeight = '1';
         config.padding && (el.style.padding = `${config.padding[0]}px ${config.padding[1]}px`);
         if (config.mode === MODE.NORMAL) {
@@ -253,82 +254,82 @@
             z });
     };
     let domLocations = [];
-    let prevIndex = 0, checkedCache = [];
+    let prevIndex = 0;
     const findLocation = function (_) {
         const { item, index, instance } = _;
+        const { value: { length } } = instance;
         const { width, height } = instance.elRect;
         const el = createTextNode(item);
         const per = (item.value / instance.maxValue);
         item.per = per;
         el.style.fontSize = instance.getValue(per) + 'px';
-        // return new Promise((resolve, reject) => {
-        //   let i = prevIndex
-        //   void function scheduler () {
-        //     requestIdleCallback(() => {
-        //       instance.elWrap.appendChild(el)
-        //       const [x, y] = instance.getSpiral(++i * 5)
-        //       const left = x + width / 2
-        //       const top = y + height / 2
-        //       setElConfig(el, instance.config)
-        //       // // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
-        //       el.style.transform = `translate(${left}px, ${top}px)`
-        //       const rectObj = el.getBoundingClientRect().toJSON()
-        //       if(checkedCache.some(i => (Math.abs(i.x - x) < i.width / 2) && Math.abs(i.y - y) < i.height / 2)){ 
-        //         i++
-        //         scheduler()
-        //       }else{
-        //         const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0)
-        //         if(!res) {
-        //           domLocations.push(rectObj)
-        //           instance.layout = compareLocation(rectObj, instance.layout)
-        //           checkedCache.push({ // 缓存被占用的记录
-        //             x, y, width: rectObj.width, height: rectObj.height
-        //           })
-        //           prevIndex = i / 2 // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-        //           item.x = rectObj.x
-        //           item.y = rectObj.y
-        //           resolve({
-        //             ...item,
-        //             el
-        //           })
-        //         }else{
-        //           scheduler()
-        //         }
-        //       }
-        //     })
-        //   }()
-        // })
-        // console.time(`item-${item.name}`)
-        for (let i = prevIndex; i <= (width + height) / 2; i++) {
-            const [x, y] = instance.getSpiral(i * 5);
-            instance.elWrap.appendChild(el);
-            // if(checkedCache[`${x}-${y}`]) {continue} // 跳过已经命中过的坐标的
-            const left = x + width / 2;
-            const top = y + height / 2;
-            setElConfig(el, instance.config);
-            // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
-            el.style.transform = `translate(${left}px, ${top}px)`;
-            const rectObj = el.getBoundingClientRect().toJSON();
-            // 检查坐标是否在已布局的元素范围内， 在的话直接跳过
-            if (checkedCache.some(i => (Math.abs(i.x - x) < i.width / 2) && Math.abs(i.y - y) < i.height / 2)) {
-                i += 5;
-                continue;
-            }
-            const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0);
-            if (!res) {
-                checkedCache.push({
-                    x, y, width: rectObj.width, height: rectObj.height
-                });
-                domLocations.push(rectObj);
-                instance.layout = compareLocation(rectObj, instance.layout);
-                prevIndex = i / 1.5; // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-                item.x = rectObj.x;
-                item.y = rectObj.y;
-                break;
-            }
+        if (length >= 50) { // 数据量超过50开启时间分片， 仅在CPU空闲之行， 不阻塞浏览器
+            el.style.visibility = 'hidden';
+            return new Promise((resolve, reject) => {
+                let i = prevIndex;
+                void function scheduler() {
+                    requestIdleCallback(() => {
+                        instance.elWrap.appendChild(el);
+                        const [x, y] = instance.getSpiral(++i * 5);
+                        const left = x + width / 2;
+                        const top = y + height / 2;
+                        setElConfig(el, instance.config);
+                        // // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
+                        el.style.transform = `translate(${left}px, ${top}px)`;
+                        const rectObj = el.getBoundingClientRect().toJSON();
+                        if (domLocations.some(i => (Math.abs(i.left - rectObj.left) < i.width / 2) && Math.abs(i.top - rectObj.top) < i.height / 2)) {
+                            i += 2; // 已经放置过的节点直接忽略之后的五次遍历
+                            scheduler();
+                            return;
+                        }
+                        else {
+                            const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0);
+                            if (!res) {
+                                domLocations.push(rectObj);
+                                instance.layout = compareLocation(rectObj, instance.layout);
+                                prevIndex = i / 1.5; // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
+                                item.x = rectObj.x;
+                                item.y = rectObj.y;
+                                el.style.visibility = 'visible';
+                            }
+                            else {
+                                scheduler();
+                            }
+                        }
+                        resolve(Object.assign(Object.assign({}, item), { el }));
+                    });
+                }();
+            });
         }
-        // console.timeEnd(`item-${item.name}`)
-        return Object.assign(Object.assign({}, item), { el });
+        else {
+            for (let i = prevIndex; i <= (width + height) / 2; i++) {
+                const [x, y] = instance.getSpiral(i * 5);
+                instance.elWrap.appendChild(el);
+                // if(checkedCache[`${x}-${y}`]) {continue} // 跳过已经命中过的坐标的
+                const left = x + width / 2;
+                const top = y + height / 2;
+                setElConfig(el, instance.config);
+                // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
+                el.style.transform = `translate(${left}px, ${top}px)`;
+                const rectObj = el.getBoundingClientRect().toJSON();
+                // 检查坐标是否在已布局的元素范围内， 在的话直接跳过
+                if (domLocations.some(i => (Math.abs(i.left - rectObj.left) < i.width / 2) && Math.abs(i.top - rectObj.top) < i.height / 2)) {
+                    i += 2;
+                    continue;
+                }
+                const res = checkRepeat(rectObj, domLocations, instance.config.gridSize || 0);
+                if (!res) {
+                    domLocations.push(rectObj);
+                    instance.layout = compareLocation(rectObj, instance.layout);
+                    prevIndex = i / 1.5; // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
+                    item.x = rectObj.x;
+                    item.y = rectObj.y;
+                    break;
+                }
+            }
+            // console.timeEnd(`item-${item.name}`)
+            return Object.assign(Object.assign({}, item), { el });
+        }
     };
 
     // effect
@@ -507,6 +508,7 @@
                 }
             };
             this.el = options.el;
+            this.isDestory = false;
             this.value = [...options.data]; // clone
             this.sortValue = options.data.sort((a, b) => (a.value - b.value) > 0 ? 1 : -1); // muttable
             this.maxValue = this.sortValue[this.sortValue.length - 1].value;
@@ -539,6 +541,7 @@
             };
         }
         destory() {
+            this.isDestory = true; // 停止动画
             this.el.removeEventListener('mouseout', this.clearActive);
             this.el.removeChild(this.elWrap);
         }
@@ -554,8 +557,9 @@
                     else {
                         this.value[i] = res;
                     }
+                    this.effectComposFn && this.effectComposFn({ item: this.value[i], index: i, instance: this });
                 }
-                this.value.forEach((i, idx) => { this.effectComposFn && this.effectComposFn({ item: i, index: idx, instance: this }); });
+                // this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
                 this.animateComposFn && this.animateComposFn(this.value);
                 setTimeout(() => {
                     this.finallyComposFn && this.finallyComposFn(this);
@@ -570,7 +574,7 @@
                 void function run() {
                     window.requestAnimationFrame(() => {
                         throttledFn(that.value);
-                        run();
+                        !that.isDestory && run();
                     });
                 }();
             };
@@ -707,7 +711,7 @@
 
     const temp = [];
     const words = ['这根本就不好玩', '再见', 'MDML在线测试', '深入浅出CSS3', 'React测试', '这就是个文字内容', '高刷屏', '默认触发间隔', '假如我说假如', '发现越来越多的美好', '小惊喜', '不会只有我', '哦次打次', '客气客气'];
-    for (let index = 0; index < 120; index++) {
+    for (let index = 0; index < 49; index++) {
         const item = words[index];
         temp.push({
             value: Math.floor(Math.random() * 100),
@@ -734,7 +738,7 @@
         // }
         }
     };
-    // init(config)
+    init(config);
     init(Object.assign(Object.assign({}, config), { el: document.querySelector('#app2') || document.body, config: { mode: RENDER_MODE.NORMAL } }));
 
 }));

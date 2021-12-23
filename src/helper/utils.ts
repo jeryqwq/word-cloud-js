@@ -83,6 +83,7 @@ export const setElConfig = function(el: HTMLElement, config: Config) {
   config.backgroundColor && (el.style.backgroundColor = config.backgroundColor)
   config.borderColor && (el.style.borderColor = config.borderColor)
   config.borderWidth && (el.style.borderWidth = config.borderWidth + 'px')
+  config.font && (el.style.borderWidth = config.font)
   el.style.lineHeight = '1'
   config.padding && (el.style.padding = `${config.padding[0]}px ${config.padding[1]}px`)
   if(config.mode === MODE.NORMAL) {

@@ -22,8 +22,10 @@ class WordChart implements WordChartBase {
   layout: WordChartLayout
   toolTipEl: HTMLElement
   active?: Active
+  isDestory: boolean
   private constructor( options: Options ) {
     this.el = options.el
+    this.isDestory = false
     this.value = [...options.data] // clone
     this.sortValue = options.data.sort((a,b) => (a.value - b.value) > 0 ? 1 : -1) // muttable
     this.maxValue = this.sortValue[this.sortValue.length - 1].value
@@ -56,6 +58,7 @@ class WordChart implements WordChartBase {
     }
   }
   destory () {
+    this.isDestory = true // 停止动画
     this.el.removeEventListener('mouseout', this.clearActive)
     this.el.removeChild(this.elWrap)
   }
@@ -69,8 +72,9 @@ class WordChart implements WordChartBase {
       }else{
         this.value[i] = res as MappingDataItem
       }
+      this.effectComposFn && this.effectComposFn({ item: this.value[i], index: i, instance: this })
     }
-    this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
+    // this.value.forEach((i, idx) => {this.effectComposFn && this.effectComposFn({ item:i, index: idx, instance: this })})
     this.animateComposFn && this.animateComposFn(this.value)
     setTimeout(() => {
       this.finallyComposFn && this.finallyComposFn(this)
@@ -112,7 +116,7 @@ class WordChart implements WordChartBase {
       void function run(){
         window.requestAnimationFrame(() => {
           throttledFn(that.value)
-          run()
+          !that.isDestory && run()
         })
       }()
     }
