@@ -63,6 +63,7 @@
             // render(item: MappingDataItem, el: HTMLElement) {
             //   return `<span style="color: red">${item.name}</span>`
             // },
+            tooltipEditor: '',
             padding: [15, 35],
             backgroundColor: 'rgba(50,50,50,0.7)',
             borderRadius: 0,
@@ -73,9 +74,7 @@
                 lineHeight: 30
             },
             bgStyle: {
-                width: 0,
-                height: 0,
-                url: "/static/vis_resource/background/bg-tooltip.png"
+                url: "http://10.28.184.189:7000/static/vis_resource/background/bg-tooltip.png"
             },
         }
     };
@@ -481,7 +480,7 @@
                 this.toolTipEl.style.display = 'none';
             };
             this.setActive = (item, el, e) => {
-                var _a, _b;
+                var _a, _b, _c, _d;
                 this.active = {
                     item,
                     el
@@ -502,10 +501,24 @@
                     }
                 }
                 else { // use setting
-                    this.toolTipEl.style.padding = '5px 10px';
-                    this.toolTipEl.style.backgroundColor = 'rgb(105, 207, 255)';
-                    this.toolTipEl.style.borderRadius = '5px';
-                    this.toolTipEl.textContent = `${item.name}: ${item.value}`;
+                    const { tooltip } = this.config;
+                    const padding = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.padding) || [5, 10];
+                    const backgroundColor = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.backgroundColor) || 'rgba(50,50,50,0.7)';
+                    const borderRadius = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.borderRadius) || '5px';
+                    const color = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.color) || '#fff';
+                    const fontFamily = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.fontFamily) || 'Microsoft YaHei';
+                    const fontSize = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.fontSize) || 14;
+                    const lineHeight = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.lineHeight) || 30;
+                    this.toolTipEl.style.padding = `${padding[0]}px ${padding[1]}px`;
+                    this.toolTipEl.style.backgroundColor = backgroundColor;
+                    this.toolTipEl.style.borderRadius = borderRadius;
+                    this.toolTipEl.textContent = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.tooltipEditor) || `${item.name}: ${item.value}`;
+                    ((_c = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _c === void 0 ? void 0 : _c.url) && (this.toolTipEl.style.background = `url(${(_d = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _d === void 0 ? void 0 : _d.url})`);
+                    this.toolTipEl.style.backgroundSize = '100% 100%';
+                    this.toolTipEl.style.color = color;
+                    this.toolTipEl.style.fontFamily = fontFamily;
+                    this.toolTipEl.style.fontSize = fontSize + '';
+                    this.toolTipEl.style.lineHeight = lineHeight + 'px';
                 }
             };
             this.el = options.el;
@@ -646,9 +659,7 @@
             exec(instance, hooks ? mergeHooks(hooks, forStatic) : forStatic);
         }
         appendCss();
-        console.time('render');
         instance.trigger();
-        console.timeEnd('render');
         return instance;
     }
     function mergeHooks(hooks, targetMode) {

@@ -17,9 +17,7 @@ export  function init (config: Options) {
     exec(instance, hooks ? mergeHooks(hooks, forStatic) : forStatic)
   }
   appendCss()
-  console.time('render')
   instance.trigger()
-  console.timeEnd('render')
   return instance
 }
 function mergeHooks (hooks: Hooks, targetMode: StandardType): StandardType {

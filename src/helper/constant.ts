@@ -55,6 +55,7 @@ export const defaultOptions = {
     // render(item: MappingDataItem, el: HTMLElement) {
     //   return `<span style="color: red">${item.name}</span>`
     // },
+    tooltipEditor: '',
     padding: [15, 35],
     backgroundColor: 'rgba(50,50,50,0.7)',
     borderRadius: 0,
@@ -65,9 +66,7 @@ export const defaultOptions = {
       lineHeight: 30
     },
     bgStyle: {
-      width: 0,
-      height: 0,
-      url: "/static/vis_resource/background/bg-tooltip.png"
+      url: "http://10.28.184.189:7000/static/vis_resource/background/bg-tooltip.png"
     },
   }
 }

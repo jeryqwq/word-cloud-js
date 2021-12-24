@@ -103,10 +103,24 @@ class WordChart implements WordChartBase {
         console.error(`the render function should return a HTMLElement or Html String, not a ${context.constructor.toString()}`)
       }
     }else{ // use setting
-      this.toolTipEl.style.padding = '5px 10px'
-      this.toolTipEl.style.backgroundColor = 'rgb(105, 207, 255)'
-      this.toolTipEl.style.borderRadius = '5px'
-      this.toolTipEl.textContent = `${item.name}: ${item.value}`
+      const { tooltip } = this.config
+      const padding = tooltip?.padding || [5, 10]
+      const backgroundColor = tooltip?.backgroundColor || 'rgba(50,50,50,0.7)'
+      const borderRadius = tooltip?.borderRadius || '5px'
+      const color = tooltip?.textStyle.color ||'#fff'
+      const fontFamily = tooltip?.textStyle.fontFamily ||'Microsoft YaHei'
+      const fontSize = tooltip?.textStyle.fontSize || 14
+      const lineHeight = tooltip?.textStyle.lineHeight || 30
+      this.toolTipEl.style.padding = `${padding[0]}px ${padding[1]}px`
+      this.toolTipEl.style.backgroundColor = backgroundColor
+      this.toolTipEl.style.borderRadius = borderRadius
+      this.toolTipEl.textContent = tooltip?.tooltipEditor || `${item.name}: ${item.value}`
+      tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
+      this.toolTipEl.style.backgroundSize = '100% 100%'
+      this.toolTipEl.style.color = color
+      this.toolTipEl.style.fontFamily = fontFamily
+      this.toolTipEl.style.fontSize = fontSize + ''
+      this.toolTipEl.style.lineHeight = lineHeight + 'px'
     }
   }
   animate(fn: (_: OptionData) => void, ms: number = 20):WordChart {
