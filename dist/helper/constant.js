@@ -39,12 +39,12 @@ export const defaultOptions = {
             color: 'green'
         }],
     sizeMin: 12,
-    sizeMax: 24,
+    sizeMax: 16,
     gridSize: 0,
     borderColor: "rgba(105,207,255)",
     borderWidth: 0,
     backgroundColor: "rgba(16,22,24,0)",
-    padding: [1, 1],
+    padding: [0, 0],
     events: { // 自定义事件
     // click: (item: MappingDataItem, instance: WordChartBase) => {
     //   console.log(item, '----')
@@ -55,6 +55,7 @@ export const defaultOptions = {
         // render(item: MappingDataItem, el: HTMLElement) {
         //   return `<span style="color: red">${item.name}</span>`
         // },
+        tooltipEditor: '',
         padding: [15, 35],
         backgroundColor: 'rgba(50,50,50,0.7)',
         borderRadius: 0,
@@ -65,9 +66,7 @@ export const defaultOptions = {
             lineHeight: 30
         },
         bgStyle: {
-            width: 0,
-            height: 0,
-            url: "/static/vis_resource/background/bg-tooltip.png"
+            url: "http://10.28.184.189:7000/static/vis_resource/background/bg-tooltip.png"
         },
     }
 };

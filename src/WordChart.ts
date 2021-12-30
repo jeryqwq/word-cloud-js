@@ -23,6 +23,7 @@ class WordChart implements WordChartBase {
   toolTipEl: HTMLElement
   active?: Active
   isDestory: boolean
+  domLocations:  Array<DOMRect>
   private constructor( options: Options ) {
     this.el = options.el
     this.isDestory = false
@@ -30,6 +31,7 @@ class WordChart implements WordChartBase {
     this.sortValue = options.data.sort((a,b) => (a.value - b.value) > 0 ? 1 : -1) // muttable
     this.maxValue = this.sortValue[this.sortValue.length - 1].value
     this.elRect = this.el.getBoundingClientRect()
+    this.domLocations = []
     const { width, height } = this.elRect
     this.RADIUSX = (width - 50) / 2
     this.RADIUSY = (height - 50) / 2
@@ -61,6 +63,7 @@ class WordChart implements WordChartBase {
     this.isDestory = true // 停止动画
     this.el.removeEventListener('mouseout', this.clearActive)
     this.el.removeChild(this.elWrap)
+    this.el.removeChild(this.toolTipEl)
   }
   async trigger() {
     // this.value = this.value.map((i, index) => this.composFn ? this.composFn({item: i, index: index, instance: this}) : i)

@@ -6,9 +6,12 @@ import { MODE, TEXT_ORIENTATION } from './helper/constant';
 import { suitLayout } from './finally';
 import { appendCss } from './helper/utils';
 
-
+let cacheInstance = new WeakMap<HTMLElement, WordChart>()
 export  function init (config: Options) {
+  const { el } = config
+  cacheInstance.get(el)?.destory() // 与setOption公用一个api， 初始化检查是否有之前的实例， 有的话销毁掉重新实例化
   const instance = WordChart.of(config)  // 类实例
+  cacheInstance.set(el, instance)
   const mode = instance?.config?.mode
   const { hooks } = config
   if(mode === MODE.SCROLL) {

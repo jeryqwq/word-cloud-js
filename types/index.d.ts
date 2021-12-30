@@ -75,7 +75,8 @@ interface WordChartBase {
   setActive: (item: MappingDataItem, el: HTMLElement, e: MouseEvent) => void
   clearActive: Function
   active?: Active,
-  destory: Function
+  destory: Function,
+  domLocations: Array<DOMRect>
 }
 declare type MappingDataItem = {
   x: number,

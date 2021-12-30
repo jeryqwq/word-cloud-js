@@ -253,11 +253,11 @@
             y,
             z });
     };
-    let domLocations = [];
+    // let domLocations: Array<DOMRect> = []
     let prevIndex = 0;
     const findLocation = function (_) {
         const { item, index, instance } = _;
-        const { value: { length } } = instance;
+        const { value: { length }, domLocations } = instance;
         const { width, height } = instance.elRect;
         const el = createTextNode(item);
         const per = (item.value / instance.maxValue);
@@ -274,7 +274,6 @@
                         const left = x + width / 2;
                         const top = y + height / 2;
                         setElConfig(el, instance.config);
-                        // // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
                         el.style.transform = `translate(${left}px, ${top}px)`;
                         const rectObj = el.getBoundingClientRect().toJSON();
                         if (domLocations.some(i => (Math.abs(i.left - rectObj.left) < i.width / 2) && Math.abs(i.top - rectObj.top) < i.height / 2)) {
@@ -527,6 +526,7 @@
             this.sortValue = options.data.sort((a, b) => (a.value - b.value) > 0 ? 1 : -1); // muttable
             this.maxValue = this.sortValue[this.sortValue.length - 1].value;
             this.elRect = this.el.getBoundingClientRect();
+            this.domLocations = [];
             const { width, height } = this.elRect;
             this.RADIUSX = (width - 50) / 2;
             this.RADIUSY = (height - 50) / 2;
@@ -558,6 +558,7 @@
             this.isDestory = true; // 停止动画
             this.el.removeEventListener('mouseout', this.clearActive);
             this.el.removeChild(this.elWrap);
+            this.el.removeChild(this.toolTipEl);
         }
         trigger() {
             return __awaiter(this, void 0, void 0, function* () {
@@ -647,10 +648,14 @@
         elWrap.style.transform = `translate(${(x + x1) / 2}px, ${(y + y1) / 2}px)`;
     };
 
+    let cacheInstance = new WeakMap();
     function init(config) {
-        var _a;
+        var _a, _b;
+        const { el } = config;
+        (_a = cacheInstance.get(el)) === null || _a === void 0 ? void 0 : _a.destory(); // 与setOption公用一个api， 初始化检查是否有之前的实例， 有的话销毁掉重新实例化
         const instance = WordChart.of(config); // 类实例
-        const mode = (_a = instance === null || instance === void 0 ? void 0 : instance.config) === null || _a === void 0 ? void 0 : _a.mode;
+        cacheInstance.set(el, instance);
+        const mode = (_b = instance === null || instance === void 0 ? void 0 : instance.config) === null || _b === void 0 ? void 0 : _b.mode;
         const { hooks } = config;
         if (mode === MODE.SCROLL) {
             exec(instance, hooks ? mergeHooks(hooks, forMove) : forMove);

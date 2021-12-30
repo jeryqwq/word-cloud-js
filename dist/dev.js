@@ -557,6 +557,7 @@
             this.isDestory = true; // 停止动画
             this.el.removeEventListener('mouseout', this.clearActive);
             this.el.removeChild(this.elWrap);
+            this.el.removeChild(this.toolTipEl);
         }
         trigger() {
             return __awaiter(this, void 0, void 0, function* () {
@@ -646,10 +647,14 @@
         elWrap.style.transform = `translate(${(x + x1) / 2}px, ${(y + y1) / 2}px)`;
     };
 
+    let cacheInstance = new WeakMap();
     function init(config) {
-        var _a;
+        var _a, _b;
+        const { el } = config;
+        (_a = cacheInstance.get(el)) === null || _a === void 0 ? void 0 : _a.destory(); // 与setOption公用一个api， 初始化检查是否有之前的实例， 有的话销毁掉重新实例化
         const instance = WordChart.of(config); // 类实例
-        const mode = (_a = instance === null || instance === void 0 ? void 0 : instance.config) === null || _a === void 0 ? void 0 : _a.mode;
+        cacheInstance.set(el, instance);
+        const mode = (_b = instance === null || instance === void 0 ? void 0 : instance.config) === null || _b === void 0 ? void 0 : _b.mode;
         const { hooks } = config;
         if (mode === MODE.SCROLL) {
             exec(instance, hooks ? mergeHooks(hooks, forMove) : forMove);
