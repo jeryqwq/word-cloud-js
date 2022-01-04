@@ -252,11 +252,11 @@
             y,
             z });
     };
-    let domLocations = [];
+    // let domLocations: Array<DOMRect> = []
     let prevIndex = 0;
     const findLocation = function (_) {
         const { item, index, instance } = _;
-        const { value: { length } } = instance;
+        const { value: { length }, domLocations } = instance;
         const { width, height } = instance.elRect;
         const el = createTextNode(item);
         const per = (item.value / instance.maxValue);
@@ -273,7 +273,6 @@
                         const left = x + width / 2;
                         const top = y + height / 2;
                         setElConfig(el, instance.config);
-                        // // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
                         el.style.transform = `translate(${left}px, ${top}px)`;
                         const rectObj = el.getBoundingClientRect().toJSON();
                         if (domLocations.some(i => (Math.abs(i.left - rectObj.left) < i.width / 2) && Math.abs(i.top - rectObj.top) < i.height / 2)) {
@@ -484,8 +483,8 @@
                     item,
                     el
                 };
-                this.toolTipEl.style.left = e.x + 'px';
-                this.toolTipEl.style.top = e.y + 'px';
+                this.toolTipEl.style.left = e.screenX + 'px';
+                this.toolTipEl.style.top = e.screenY + 'px';
                 this.toolTipEl.style.display = 'inline-block';
                 if ((_b = (_a = this.config) === null || _a === void 0 ? void 0 : _a.tooltip) === null || _b === void 0 ? void 0 : _b.render) {
                     const context = this.config.tooltip.render(item, this.toolTipEl);
@@ -526,6 +525,7 @@
             this.sortValue = options.data.sort((a, b) => (a.value - b.value) > 0 ? 1 : -1); // muttable
             this.maxValue = this.sortValue[this.sortValue.length - 1].value;
             this.elRect = this.el.getBoundingClientRect();
+            this.domLocations = [];
             const { width, height } = this.elRect;
             this.RADIUSX = (width - 50) / 2;
             this.RADIUSY = (height - 50) / 2;

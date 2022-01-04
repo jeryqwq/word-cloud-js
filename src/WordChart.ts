@@ -93,8 +93,8 @@ class WordChart implements WordChartBase {
       item,
       el
     }
-    this.toolTipEl.style.left = e.x + 'px'
-    this.toolTipEl.style.top = e.y + 'px'
+    this.toolTipEl.style.left = e.screenX + 'px'
+    this.toolTipEl.style.top = e.screenY + 'px'
     this.toolTipEl.style.display = 'inline-block'
     if(this.config?.tooltip?.render) {
       const context = this.config.tooltip.render(item, this.toolTipEl)

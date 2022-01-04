@@ -16,11 +16,11 @@ export const initParams = function (_) {
         y,
         z });
 };
-let domLocations = [];
+// let domLocations: Array<DOMRect> = []
 let prevIndex = 0;
 export const findLocation = function (_) {
     const { item, index, instance } = _;
-    const { value: { length } } = instance;
+    const { value: { length }, domLocations } = instance;
     const { width, height } = instance.elRect;
     const el = createTextNode(item);
     const per = (item.value / instance.maxValue);
@@ -37,7 +37,6 @@ export const findLocation = function (_) {
                     const left = x + width / 2;
                     const top = y + height / 2;
                     setElConfig(el, instance.config);
-                    // // el.style.transform = `translate(${left}px, ${top}px) rotate(${Math.floor(Math.random()*40)}deg)`
                     el.style.transform = `translate(${left}px, ${top}px)`;
                     const rectObj = el.getBoundingClientRect().toJSON();
                     if (domLocations.some(i => (Math.abs(i.left - rectObj.left) < i.width / 2) && Math.abs(i.top - rectObj.top) < i.height / 2)) {

@@ -41,13 +41,13 @@ const defaultOptions = {
   },
   tooltip: {
     show: true,
-    // render(item: MappingDataItem, el: HTMLElement) {
+    // render(item: MappingDataItem, el: HTMLElement) { // tooltip 渲染函数， 返回DOMString | HTMLElement
     //   return `<span style="color: red">${item.name}</span>`
     // },
     padding: [15, 35],
     backgroundColor: 'rgba(50,50,50,0.7)',
     borderRadius: 0,
-    textStyle: {
+    textStyle: { // tooltip文字样式
       color: '#fff',
       fontFamily: 'Microsoft YaHei',
       fontSize: 14,
@@ -66,14 +66,14 @@ const config = {
   data: temp,
   config: defaultOptions,
   hooks: { // 函数扩展， 适用于自增加的其他业务, 如增加其他动画， 渲染每一项之前执行自己的钩子...
-    // scan: (_: ScanParams) => {
+    // scan: (_: ScanParams) => { // 扫描钩子， 比系统级函数会先执行
     //   console.log(_)
     //   return _
     // },
-    // effect: (_: MappingDataItem) => {
+    // effect: (_: MappingDataItem) => { // 异步函数， 每一项渲染完成后会调用一次
     //   console.log(_, '-effect')
     // },
-    finally: (_: WordChartBase) => {
+    finally: (_: WordChartBase) => { // 所有任务执行完成后执行一次
       console.log(_, '---')
     }
   }

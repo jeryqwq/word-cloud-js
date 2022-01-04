@@ -3,7 +3,7 @@ import livereload from 'rollup-plugin-livereload'
 import serve from 'rollup-plugin-serve'
 
 export default {
-  input: 'src/index.ts',
+  input: 'src/dev.ts',
   output: {
     dir: 'dist',
     format: 'umd',

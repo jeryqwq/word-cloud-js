@@ -64,6 +64,7 @@ class WordChart {
         this.sortValue = options.data.sort((a, b) => (a.value - b.value) > 0 ? 1 : -1); // muttable
         this.maxValue = this.sortValue[this.sortValue.length - 1].value;
         this.elRect = this.el.getBoundingClientRect();
+        this.domLocations = [];
         const { width, height } = this.elRect;
         this.RADIUSX = (width - 50) / 2;
         this.RADIUSY = (height - 50) / 2;
@@ -95,6 +96,7 @@ class WordChart {
         this.isDestory = true; // 停止动画
         this.el.removeEventListener('mouseout', this.clearActive);
         this.el.removeChild(this.elWrap);
+        this.el.removeChild(this.toolTipEl);
     }
     trigger() {
         return __awaiter(this, void 0, void 0, function* () {
