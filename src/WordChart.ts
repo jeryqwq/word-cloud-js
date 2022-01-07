@@ -24,8 +24,10 @@ class WordChart implements WordChartBase {
   active?: Active
   isDestory: boolean
   domLocations:  Array<DOMRect>
+  elMap: WeakMap<HTMLElement, DataItem>
   private constructor( options: Options ) {
     this.el = options.el
+    this.elMap = new WeakMap()
     this.isDestory = false
     this.value = [...options.data] // clone
     this.sortValue = options.data.sort((a,b) => (a.value - b.value) > 0 ? 1 : -1) // muttable
@@ -93,8 +95,9 @@ class WordChart implements WordChartBase {
       item,
       el
     }
-    this.toolTipEl.style.left = e.screenX + 'px'
-    this.toolTipEl.style.top = e.screenY + 'px'
+    // this.toolTipEl.style.transform = `translate(${x}px, ${y}px)`
+    this.toolTipEl.style.left = e.clientX + 'px'
+    this.toolTipEl.style.top = e.clientY +  'px'
     this.toolTipEl.style.display = 'inline-block'
     if(this.config?.tooltip?.render) {
       const context = this.config.tooltip.render(item, this.toolTipEl)
@@ -114,6 +117,8 @@ class WordChart implements WordChartBase {
       const fontFamily = tooltip?.textStyle.fontFamily ||'Microsoft YaHei'
       const fontSize = tooltip?.textStyle.fontSize || 14
       const lineHeight = tooltip?.textStyle.lineHeight || 30
+      const width = tooltip?.bgStyle?.width
+      const height = tooltip?.bgStyle?.height
       this.toolTipEl.style.padding = `${padding[0]}px ${padding[1]}px`
       this.toolTipEl.style.backgroundColor = backgroundColor
       this.toolTipEl.style.borderRadius = borderRadius
@@ -124,6 +129,8 @@ class WordChart implements WordChartBase {
       this.toolTipEl.style.fontFamily = fontFamily
       this.toolTipEl.style.fontSize = fontSize + ''
       this.toolTipEl.style.lineHeight = lineHeight + 'px'
+      width && (this.toolTipEl.style.width = width + 'px')
+      height && (this.toolTipEl.style.height = height + 'px')
     }
   }
   animate(fn: (_: OptionData) => void, ms: number = 20):WordChart {

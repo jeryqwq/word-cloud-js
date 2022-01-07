@@ -73,6 +73,8 @@
                 lineHeight: 30
             },
             bgStyle: {
+                width: 0,
+                height: 0,
                 url: "http://10.28.184.189:7000/static/vis_resource/background/bg-tooltip.png"
             },
         }
@@ -80,6 +82,7 @@
 
     const createTextNode = function (item) {
         const el = document.createElement('div');
+        el.setAttribute('isWordCloudNode', 'TRUE');
         el.textContent = item.name;
         el.className = 'word-cloud-item-chencc';
         return el;
@@ -240,6 +243,7 @@
         const { item, index, instance } = _;
         const { value: { length }, RADIUSX, RADIUSY } = instance;
         const itemEl = createTextNode(item);
+        instance.elMap.set(itemEl, item);
         const k = -1 + (2 * (index + 1) - 1) / length;
         const a = Math.acos(k);
         const b = a * Math.sqrt(length * Math.PI);
@@ -259,6 +263,7 @@
         const { value: { length }, domLocations } = instance;
         const { width, height } = instance.elRect;
         const el = createTextNode(item);
+        instance.elMap.set(el, item);
         const per = (item.value / instance.maxValue);
         item.per = per;
         el.style.fontSize = instance.getValue(per) + 'px';
@@ -357,7 +362,7 @@
             return;
         }
     };
-    const renderToolTip = function (item, index, instance) {
+    const eventHandle = function (item, index, instance) {
         var _a;
         const { el } = item;
         const { config } = instance;
@@ -370,15 +375,16 @@
             });
         }
         if ((_a = config.tooltip) === null || _a === void 0 ? void 0 : _a.show) {
-            el.addEventListener('mouseenter', (e) => {
-                instance.setActive(item, el, e);
-            });
+            // el.addEventListener('mouseenter', (e) => {
+            //   instance.setActive(item, el, e)
+            // })
             el.addEventListener('mouseleave', () => {
                 instance.clearActive();
             });
         }
     };
 
+    // animate 
     const rotateX = function (item, instance) {
         const angleX = [DIRECTION.RIGHT2LEFT, DIRECTION.LEFT2RIGHT].includes(instance.DIRECTION)
             ? Math.PI / Infinity
@@ -424,8 +430,6 @@
             transform
         };
     };
-
-    // animate 
     const move3D = function (tempArr, instance) {
         tempArr.forEach(i => {
             const { el } = i;
@@ -478,13 +482,14 @@
                 this.toolTipEl.style.display = 'none';
             };
             this.setActive = (item, el, e) => {
-                var _a, _b, _c, _d;
+                var _a, _b, _c, _d, _e, _f;
                 this.active = {
                     item,
                     el
                 };
-                this.toolTipEl.style.left = e.screenX + 'px';
-                this.toolTipEl.style.top = e.screenY + 'px';
+                // this.toolTipEl.style.transform = `translate(${x}px, ${y}px)`
+                this.toolTipEl.style.left = e.clientX + 'px';
+                this.toolTipEl.style.top = e.clientY + 'px';
                 this.toolTipEl.style.display = 'inline-block';
                 if ((_b = (_a = this.config) === null || _a === void 0 ? void 0 : _a.tooltip) === null || _b === void 0 ? void 0 : _b.render) {
                     const context = this.config.tooltip.render(item, this.toolTipEl);
@@ -507,19 +512,24 @@
                     const fontFamily = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.fontFamily) || 'Microsoft YaHei';
                     const fontSize = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.fontSize) || 14;
                     const lineHeight = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.lineHeight) || 30;
+                    const width = (_c = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _c === void 0 ? void 0 : _c.width;
+                    const height = (_d = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _d === void 0 ? void 0 : _d.height;
                     this.toolTipEl.style.padding = `${padding[0]}px ${padding[1]}px`;
                     this.toolTipEl.style.backgroundColor = backgroundColor;
                     this.toolTipEl.style.borderRadius = borderRadius;
                     this.toolTipEl.textContent = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.tooltipEditor) || `${item.name}: ${item.value}`;
-                    ((_c = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _c === void 0 ? void 0 : _c.url) && (this.toolTipEl.style.background = `url(${(_d = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _d === void 0 ? void 0 : _d.url})`);
+                    ((_e = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _e === void 0 ? void 0 : _e.url) && (this.toolTipEl.style.background = `url(${(_f = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _f === void 0 ? void 0 : _f.url})`);
                     this.toolTipEl.style.backgroundSize = '100% 100%';
                     this.toolTipEl.style.color = color;
                     this.toolTipEl.style.fontFamily = fontFamily;
                     this.toolTipEl.style.fontSize = fontSize + '';
                     this.toolTipEl.style.lineHeight = lineHeight + 'px';
+                    width && (this.toolTipEl.style.width = width + 'px');
+                    height && (this.toolTipEl.style.height = height + 'px');
                 }
             };
             this.el = options.el;
+            this.elMap = new WeakMap();
             this.isDestory = false;
             this.value = [...options.data]; // clone
             this.sortValue = options.data.sort((a, b) => (a.value - b.value) > 0 ? 1 : -1); // muttable
@@ -638,13 +648,26 @@
         const realHeight = layout.bottom - layout.top;
         elRect.width / realWidth;
         elRect.height / realHeight;
-        const x = elRect.left - layout.left;
-        const y = elRect.top - layout.top;
-        const x1 = elRect.right - layout.right;
-        const y1 = elRect.bottom - layout.bottom;
+        elRect.left - layout.left;
+        elRect.top - layout.top;
+        elRect.right - layout.right;
+        elRect.bottom - layout.bottom;
         elWrap.style.transformOrigin = 'center';
         // elWrap.style.transform = `translate(${x / 2}px, ${y / 2}px) scaleX(${widthPer}) scaleY(${heightPer}) `
-        elWrap.style.transform = `translate(${(x + x1) / 2}px, ${(y + y1) / 2}px)`;
+        // elWrap.style.transform = `translate(${(x + x1) / 2}px, ${(y + y1) / 2}px)`
+    };
+    const toolTipHandle = function (instance) {
+        var _a;
+        const { el, config } = instance;
+        if ((_a = config.tooltip) === null || _a === void 0 ? void 0 : _a.show) {
+            el.addEventListener('mousemove', function (e) {
+                const target = e.target;
+                if (target.attributes.getNamedItem('isWordCloudNode')) {
+                    const item = instance.elMap.get(target);
+                    instance.setActive(item, el, e);
+                }
+            });
+        }
     };
 
     let cacheInstance = new WeakMap();
@@ -714,20 +737,20 @@
     const forMove = {
         scan: [initParams],
         animate: [move3D, rotate3D],
-        effect: [setColor, renderToolTip],
-        finally: []
+        effect: [setColor, eventHandle],
+        finally: [toolTipHandle]
     };
     const forStatic = {
         scan: [findLocation],
-        effect: [setColor, renderToolTip],
+        effect: [setColor, eventHandle],
         animate: [],
-        finally: [suitLayout]
+        finally: [suitLayout, toolTipHandle]
     };
     const RENDER_MODE = MODE;
 
     const temp = [];
     const words = ['这根本就不好玩', '再见', 'MDML在线测试', '深入浅出CSS3', 'React测试', '这就是个文字内容', '高刷屏', '默认触发间隔', '假如我说假如', '发现越来越多的美好', '小惊喜', '不会只有我', '哦次打次', '客气客气'];
-    for (let index = 0; index < 49; index++) {
+    for (let index = 0; index < 40; index++) {
         const item = words[index];
         temp.push({
             value: Math.floor(Math.random() * 100),

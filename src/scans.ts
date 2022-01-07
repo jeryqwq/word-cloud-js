@@ -5,6 +5,7 @@ export const initParams = function(_: ScanParams): MappingDataItem{
   const { item, index, instance } = _; 
   const { value: { length }, RADIUSX, RADIUSY } = instance
   const itemEl = createTextNode(item)
+  instance.elMap.set(itemEl, item)
   const k = -1 + (2 * (index + 1) - 1) / length
   const a = Math.acos(k)
   const b = a * Math.sqrt(length * Math.PI)
@@ -28,6 +29,7 @@ export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> 
   const { value: { length }, domLocations } = instance
   const { width, height } = instance.elRect
   const el = createTextNode(item)
+  instance.elMap.set(el, item)
   const per = (item.value / instance.maxValue)
   item.per = per
   el.style.fontSize = instance.getValue(per) + 'px'

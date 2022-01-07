@@ -1,9 +1,9 @@
 import { initParams, findLocation } from './scans';
-import { renderToolTip, setColor } from './effets';
+import { eventHandle, setColor } from './effets';
 import { rotate3D, move3D } from './animates'
 import WordChart from './WordChart';
 import { MODE, TEXT_ORIENTATION } from './helper/constant';
-import { suitLayout } from './finally';
+import { suitLayout, toolTipHandle } from './finally';
 import { appendCss } from './helper/utils';
 
 let cacheInstance = new WeakMap<HTMLElement, WordChart>()
@@ -71,14 +71,14 @@ function exec (instance: WordChart, target: StandardType) {
 const forMove = { // 滚动模式
   scan: [initParams],
   animate: [move3D, rotate3D],
-  effect: [setColor, renderToolTip],
-  finally: []
+  effect: [setColor, eventHandle],
+  finally: [toolTipHandle]
 }
 const forStatic = { // 普通模式
   scan: [findLocation],
-  effect: [setColor, renderToolTip],
+  effect: [setColor, eventHandle],
   animate: [],
-  finally: [suitLayout]
+  finally: [suitLayout, toolTipHandle]
 }
 
 export const ORIENTATION = TEXT_ORIENTATION

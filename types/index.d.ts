@@ -59,6 +59,7 @@ declare type Options = {
 }
 interface WordChartBase {
   getValue: (_: number) => number,
+  elMap: WeakMap<HTMLElement, DataItem>
   el: HTMLElement;
   value:   OptionData;
   sortValue:  OptionData;
