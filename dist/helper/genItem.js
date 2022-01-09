@@ -1,6 +1,7 @@
 import { TEXT_ORIENTATION } from "./constant";
 export const createTextNode = function (item) {
     const el = document.createElement('div');
+    el.setAttribute('iswordcloudnode', 'TRUE');
     el.textContent = item.name;
     el.className = 'word-cloud-item-chencc';
     return el;

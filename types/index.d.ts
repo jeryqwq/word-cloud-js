@@ -86,7 +86,8 @@ declare type MappingDataItem = {
   value: number,
   name: string,
   el: HTMLElement,
-  per: number
+  per: number,
+  elRect: DOMRect
 }
 const DIRECTION = {
   RIGHT2LEFT = 1,

@@ -48,8 +48,10 @@ class WordChart implements WordChartBase {
     this.el.appendChild(this.elWrap)
     this.el.style.position = 'relative'
     this.toolTipEl = document.createElement('div')
-    this.toolTipEl.style.position = 'fixed'
-    this.toolTipEl.style.transition = 'all .4s'
+    this.toolTipEl.style.position = 'absolute'
+    // this.toolTipEl.style.transition = 'all .4s'
+    this.toolTipEl.style.left = 0 + 'px'
+    this.toolTipEl.style.top = 0  +  'px'
     this.el.appendChild(this.toolTipEl)
     this.clearActive = throttle(this.clearActive, 300)
     this.setActive = throttle(this.setActive, 100)
@@ -88,17 +90,14 @@ class WordChart implements WordChartBase {
   }
   clearActive = () =>  {
     this.active = undefined
-    this.toolTipEl.style.display = 'none'
+    this.toolTipEl.style.opacity = '0'
   }
   setActive = (item: MappingDataItem, el: HTMLElement, e: MouseEvent) => {
     this.active = {
       item,
       el
     }
-    // this.toolTipEl.style.transform = `translate(${x}px, ${y}px)`
-    this.toolTipEl.style.left = e.clientX + 'px'
-    this.toolTipEl.style.top = e.clientY +  'px'
-    this.toolTipEl.style.display = 'inline-block'
+   
     if(this.config?.tooltip?.render) {
       const context = this.config.tooltip.render(item, this.toolTipEl)
       if(typeof context === 'string') {
@@ -123,7 +122,7 @@ class WordChart implements WordChartBase {
       this.toolTipEl.style.backgroundColor = backgroundColor
       this.toolTipEl.style.borderRadius = borderRadius
       this.toolTipEl.textContent = tooltip?.tooltipEditor || `${item.name}: ${item.value}`
-      tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
+      // tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
       this.toolTipEl.style.backgroundSize = '100% 100%'
       this.toolTipEl.style.color = color
       this.toolTipEl.style.fontFamily = fontFamily
@@ -132,6 +131,11 @@ class WordChart implements WordChartBase {
       width && (this.toolTipEl.style.width = width + 'px')
       height && (this.toolTipEl.style.height = height + 'px')
     }
+    const { x, y  } = item
+    const { offsetWidth, offsetHeight } = el
+    const elRect = this.toolTipEl.offsetWidth
+    this.toolTipEl.style.transform = `translate(${x > offsetWidth / 2 ? x - this.toolTipEl.offsetWidth  : x + 10}px, ${y > offsetHeight / 2  ? y - this.toolTipEl.offsetHeight : y + 10}px)`
+    this.toolTipEl.style.opacity = '1'
   }
   animate(fn: (_: OptionData) => void, ms: number = 20):WordChart {
     const that = this

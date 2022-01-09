@@ -17,13 +17,14 @@ class WordChart {
             this.toolTipEl.style.display = 'none';
         };
         this.setActive = (item, el, e) => {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e, _f;
             this.active = {
                 item,
                 el
             };
-            this.toolTipEl.style.left = e.screenX + 'px';
-            this.toolTipEl.style.top = e.screenY + 'px';
+            // this.toolTipEl.style.transform = `translate(${x}px, ${y}px)`
+            this.toolTipEl.style.left = e.clientX + 'px';
+            this.toolTipEl.style.top = e.clientY + 'px';
             this.toolTipEl.style.display = 'inline-block';
             if ((_b = (_a = this.config) === null || _a === void 0 ? void 0 : _a.tooltip) === null || _b === void 0 ? void 0 : _b.render) {
                 const context = this.config.tooltip.render(item, this.toolTipEl);
@@ -46,19 +47,24 @@ class WordChart {
                 const fontFamily = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.fontFamily) || 'Microsoft YaHei';
                 const fontSize = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.fontSize) || 14;
                 const lineHeight = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.textStyle.lineHeight) || 30;
+                const width = (_c = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _c === void 0 ? void 0 : _c.width;
+                const height = (_d = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _d === void 0 ? void 0 : _d.height;
                 this.toolTipEl.style.padding = `${padding[0]}px ${padding[1]}px`;
                 this.toolTipEl.style.backgroundColor = backgroundColor;
                 this.toolTipEl.style.borderRadius = borderRadius;
                 this.toolTipEl.textContent = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.tooltipEditor) || `${item.name}: ${item.value}`;
-                ((_c = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _c === void 0 ? void 0 : _c.url) && (this.toolTipEl.style.background = `url(${(_d = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _d === void 0 ? void 0 : _d.url})`);
+                ((_e = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _e === void 0 ? void 0 : _e.url) && (this.toolTipEl.style.background = `url(${(_f = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _f === void 0 ? void 0 : _f.url})`);
                 this.toolTipEl.style.backgroundSize = '100% 100%';
                 this.toolTipEl.style.color = color;
                 this.toolTipEl.style.fontFamily = fontFamily;
                 this.toolTipEl.style.fontSize = fontSize + '';
                 this.toolTipEl.style.lineHeight = lineHeight + 'px';
+                width && (this.toolTipEl.style.width = width + 'px');
+                height && (this.toolTipEl.style.height = height + 'px');
             }
         };
         this.el = options.el;
+        this.elMap = new WeakMap();
         this.isDestory = false;
         this.value = [...options.data]; // clone
         this.sortValue = options.data.sort((a, b) => (a.value - b.value) > 0 ? 1 : -1); // muttable

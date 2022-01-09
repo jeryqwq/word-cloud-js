@@ -66,6 +66,8 @@ export const defaultOptions = {
             lineHeight: 30
         },
         bgStyle: {
+            width: 0,
+            height: 0,
             url: "http://10.28.184.189:7000/static/vis_resource/background/bg-tooltip.png"
         },
     }

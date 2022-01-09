@@ -26,7 +26,7 @@ export const setColor = function (item, index, instance) {
         return;
     }
 };
-export const renderToolTip = function (item, index, instance) {
+export const eventHandle = function (item, index, instance) {
     var _a;
     const { el } = item;
     const { config } = instance;
@@ -39,9 +39,9 @@ export const renderToolTip = function (item, index, instance) {
         });
     }
     if ((_a = config.tooltip) === null || _a === void 0 ? void 0 : _a.show) {
-        el.addEventListener('mouseenter', (e) => {
-            instance.setActive(item, el, e);
-        });
+        // el.addEventListener('mouseenter', (e) => {
+        //   instance.setActive(item, el, e)
+        // })
         el.addEventListener('mouseleave', () => {
             instance.clearActive();
         });

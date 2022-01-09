@@ -32,6 +32,7 @@ export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> 
   instance.elMap.set(el, item)
   const per = (item.value / instance.maxValue)
   item.per = per
+  item.el = el
   el.style.fontSize = instance.getValue(per) + 'px'
   if(length >= 50) { // 数据量超过50开启时间分片， 仅在CPU空闲之行， 不阻塞浏览器
     el.style.visibility = 'hidden'
@@ -56,17 +57,18 @@ export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> 
               domLocations.push(rectObj)
               instance.layout = compareLocation(rectObj, instance.layout)
               prevIndex = i / 1.5 // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-              item.x = rectObj.x
-              item.y = rectObj.y
+              item.x = left
+              item.y = top
+              item.elRect = rectObj
               el.style.visibility = 'visible'
+              resolve({
+                ...item,
+                el
+              })
             }else{
               scheduler()
             }
           }
-          resolve({
-            ...item,
-            el
-          })
         })
       }()
     })
@@ -91,16 +93,14 @@ export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> 
             domLocations.push(rectObj)
             instance.layout = compareLocation(rectObj, instance.layout)
             prevIndex = i / 1.5// 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-            item.x = rectObj.x
-            item.y = rectObj.y
+            item.x = left
+            item.y = top
+            item.elRect = rectObj
             break
           }
         }
       // console.timeEnd(`item-${item.name}`)
-    return {
-      ...item,
-      el
-    }
+    return item
   }
 }
 

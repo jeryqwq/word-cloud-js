@@ -82,7 +82,7 @@
 
     const createTextNode = function (item) {
         const el = document.createElement('div');
-        el.setAttribute('isWordCloudNode', 'TRUE');
+        el.setAttribute('iswordcloudnode', 'TRUE');
         el.textContent = item.name;
         el.className = 'word-cloud-item-chencc';
         return el;
@@ -266,6 +266,7 @@
         instance.elMap.set(el, item);
         const per = (item.value / instance.maxValue);
         item.per = per;
+        item.el = el;
         el.style.fontSize = instance.getValue(per) + 'px';
         if (length >= 50) { // 数据量超过50开启时间分片， 仅在CPU空闲之行， 不阻塞浏览器
             el.style.visibility = 'hidden';
@@ -291,15 +292,16 @@
                                 domLocations.push(rectObj);
                                 instance.layout = compareLocation(rectObj, instance.layout);
                                 prevIndex = i / 1.5; // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-                                item.x = rectObj.x;
-                                item.y = rectObj.y;
+                                item.x = left;
+                                item.y = top;
+                                item.elRect = rectObj;
                                 el.style.visibility = 'visible';
+                                resolve(Object.assign(Object.assign({}, item), { el }));
                             }
                             else {
                                 scheduler();
                             }
                         }
-                        resolve(Object.assign(Object.assign({}, item), { el }));
                     });
                 }();
             });
@@ -325,13 +327,14 @@
                     domLocations.push(rectObj);
                     instance.layout = compareLocation(rectObj, instance.layout);
                     prevIndex = i / 1.5; // 已经被算过的点几乎没有概率还能容纳下其他元素了，直接忽略
-                    item.x = rectObj.x;
-                    item.y = rectObj.y;
+                    item.x = left;
+                    item.y = top;
+                    item.elRect = rectObj;
                     break;
                 }
             }
             // console.timeEnd(`item-${item.name}`)
-            return Object.assign(Object.assign({}, item), { el });
+            return item;
         }
     };
 
@@ -479,18 +482,14 @@
         constructor(options) {
             this.clearActive = () => {
                 this.active = undefined;
-                this.toolTipEl.style.display = 'none';
+                this.toolTipEl.style.opacity = '0';
             };
             this.setActive = (item, el, e) => {
-                var _a, _b, _c, _d, _e, _f;
+                var _a, _b, _c, _d;
                 this.active = {
                     item,
                     el
                 };
-                // this.toolTipEl.style.transform = `translate(${x}px, ${y}px)`
-                this.toolTipEl.style.left = e.clientX + 'px';
-                this.toolTipEl.style.top = e.clientY + 'px';
-                this.toolTipEl.style.display = 'inline-block';
                 if ((_b = (_a = this.config) === null || _a === void 0 ? void 0 : _a.tooltip) === null || _b === void 0 ? void 0 : _b.render) {
                     const context = this.config.tooltip.render(item, this.toolTipEl);
                     if (typeof context === 'string') {
@@ -518,7 +517,7 @@
                     this.toolTipEl.style.backgroundColor = backgroundColor;
                     this.toolTipEl.style.borderRadius = borderRadius;
                     this.toolTipEl.textContent = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.tooltipEditor) || `${item.name}: ${item.value}`;
-                    ((_e = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _e === void 0 ? void 0 : _e.url) && (this.toolTipEl.style.background = `url(${(_f = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _f === void 0 ? void 0 : _f.url})`);
+                    // tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
                     this.toolTipEl.style.backgroundSize = '100% 100%';
                     this.toolTipEl.style.color = color;
                     this.toolTipEl.style.fontFamily = fontFamily;
@@ -527,6 +526,11 @@
                     width && (this.toolTipEl.style.width = width + 'px');
                     height && (this.toolTipEl.style.height = height + 'px');
                 }
+                const { x, y } = item;
+                const { offsetWidth, offsetHeight } = el;
+                this.toolTipEl.offsetWidth;
+                this.toolTipEl.style.transform = `translate(${x > offsetWidth / 2 ? x - this.toolTipEl.offsetWidth : x + 10}px, ${y > offsetHeight / 2 ? y - this.toolTipEl.offsetHeight : y + 10}px)`;
+                this.toolTipEl.style.opacity = '1';
             };
             this.el = options.el;
             this.elMap = new WeakMap();
@@ -550,8 +554,10 @@
             this.el.appendChild(this.elWrap);
             this.el.style.position = 'relative';
             this.toolTipEl = document.createElement('div');
-            this.toolTipEl.style.position = 'fixed';
-            this.toolTipEl.style.transition = 'all .4s';
+            this.toolTipEl.style.position = 'absolute';
+            // this.toolTipEl.style.transition = 'all .4s'
+            this.toolTipEl.style.left = 0 + 'px';
+            this.toolTipEl.style.top = 0 + 'px';
             this.el.appendChild(this.toolTipEl);
             this.clearActive = throttle(this.clearActive, 300);
             this.setActive = throttle(this.setActive, 100);
@@ -652,7 +658,7 @@
         elRect.top - layout.top;
         elRect.right - layout.right;
         elRect.bottom - layout.bottom;
-        elWrap.style.transformOrigin = 'center';
+        // elWrap.style.transformOrigin = 'center'
         // elWrap.style.transform = `translate(${x / 2}px, ${y / 2}px) scaleX(${widthPer}) scaleY(${heightPer}) `
         // elWrap.style.transform = `translate(${(x + x1) / 2}px, ${(y + y1) / 2}px)`
     };
@@ -662,7 +668,7 @@
         if ((_a = config.tooltip) === null || _a === void 0 ? void 0 : _a.show) {
             el.addEventListener('mousemove', function (e) {
                 const target = e.target;
-                if (target.attributes.getNamedItem('isWordCloudNode')) {
+                if (target.attributes.getNamedItem('iswordcloudnode')) {
                     const item = instance.elMap.get(target);
                     instance.setActive(item, el, e);
                 }
