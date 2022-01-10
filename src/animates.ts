@@ -45,6 +45,8 @@ export const move = function (item: MappingDataItem, instance: WordChartBase) {
   const alpha = (z + RADIUS) / (2 * RADIUS)
   const left = `${x + CX - 15}px`
   const top = `${y + CY - 15}px`
+  item.x1 = x + CX - 15
+  item.y1 = y + CY - 15
   const transform = `translate(${left}, ${top}) scale(${scale})`
   return {
     x,

@@ -14,18 +14,14 @@ class WordChart {
     constructor(options) {
         this.clearActive = () => {
             this.active = undefined;
-            this.toolTipEl.style.display = 'none';
+            this.toolTipEl.style.opacity = '0';
         };
         this.setActive = (item, el, e) => {
-            var _a, _b, _c, _d, _e, _f;
+            var _a, _b, _c, _d;
             this.active = {
                 item,
                 el
             };
-            // this.toolTipEl.style.transform = `translate(${x}px, ${y}px)`
-            this.toolTipEl.style.left = e.clientX + 'px';
-            this.toolTipEl.style.top = e.clientY + 'px';
-            this.toolTipEl.style.display = 'inline-block';
             if ((_b = (_a = this.config) === null || _a === void 0 ? void 0 : _a.tooltip) === null || _b === void 0 ? void 0 : _b.render) {
                 const context = this.config.tooltip.render(item, this.toolTipEl);
                 if (typeof context === 'string') {
@@ -53,7 +49,7 @@ class WordChart {
                 this.toolTipEl.style.backgroundColor = backgroundColor;
                 this.toolTipEl.style.borderRadius = borderRadius;
                 this.toolTipEl.textContent = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.tooltipEditor) || `${item.name}: ${item.value}`;
-                ((_e = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _e === void 0 ? void 0 : _e.url) && (this.toolTipEl.style.background = `url(${(_f = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _f === void 0 ? void 0 : _f.url})`);
+                // tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
                 this.toolTipEl.style.backgroundSize = '100% 100%';
                 this.toolTipEl.style.color = color;
                 this.toolTipEl.style.fontFamily = fontFamily;
@@ -62,6 +58,11 @@ class WordChart {
                 width && (this.toolTipEl.style.width = width + 'px');
                 height && (this.toolTipEl.style.height = height + 'px');
             }
+            const { x, y } = item;
+            const { offsetWidth, offsetHeight } = el;
+            const elRect = this.toolTipEl.offsetWidth;
+            this.toolTipEl.style.transform = `translate(${x > offsetWidth / 2 ? x - this.toolTipEl.offsetWidth : x + 10}px, ${y > offsetHeight / 2 ? y - this.toolTipEl.offsetHeight : y + 10}px)`;
+            this.toolTipEl.style.opacity = '1';
         };
         this.el = options.el;
         this.elMap = new WeakMap();
@@ -85,8 +86,10 @@ class WordChart {
         this.el.appendChild(this.elWrap);
         this.el.style.position = 'relative';
         this.toolTipEl = document.createElement('div');
-        this.toolTipEl.style.position = 'fixed';
-        this.toolTipEl.style.transition = 'all .4s';
+        this.toolTipEl.style.position = 'absolute';
+        // this.toolTipEl.style.transition = 'all .4s'
+        this.toolTipEl.style.left = 0 + 'px';
+        this.toolTipEl.style.top = 0 + 'px';
         this.el.appendChild(this.toolTipEl);
         this.clearActive = throttle(this.clearActive, 300);
         this.setActive = throttle(this.setActive, 100);

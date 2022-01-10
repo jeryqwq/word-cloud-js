@@ -423,6 +423,8 @@
         const alpha = (z + RADIUS) / (2 * RADIUS);
         const left = `${x + CX - 15}px`;
         const top = `${y + CY - 15}px`;
+        item.x1 = x + CX - 15;
+        item.y1 = y + CY - 15;
         const transform = `translate(${left}, ${top}) scale(${scale})`;
         return {
             x,
@@ -482,10 +484,10 @@
         constructor(options) {
             this.clearActive = () => {
                 this.active = undefined;
-                this.toolTipEl.style.opacity = '0';
+                this.toolTipEl.style.visibility = 'hidden';
             };
-            this.setActive = (item, el, e) => {
-                var _a, _b, _c, _d;
+            this.setActive = (item, el) => {
+                var _a, _b, _c, _d, _e, _f;
                 this.active = {
                     item,
                     el
@@ -517,7 +519,7 @@
                     this.toolTipEl.style.backgroundColor = backgroundColor;
                     this.toolTipEl.style.borderRadius = borderRadius;
                     this.toolTipEl.textContent = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.tooltipEditor) || `${item.name}: ${item.value}`;
-                    // tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
+                    ((_e = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _e === void 0 ? void 0 : _e.url) && (this.toolTipEl.style.background = `url(${(_f = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _f === void 0 ? void 0 : _f.url})`);
                     this.toolTipEl.style.backgroundSize = '100% 100%';
                     this.toolTipEl.style.color = color;
                     this.toolTipEl.style.fontFamily = fontFamily;
@@ -526,11 +528,12 @@
                     width && (this.toolTipEl.style.width = width + 'px');
                     height && (this.toolTipEl.style.height = height + 'px');
                 }
-                const { x, y } = item;
-                const { offsetWidth, offsetHeight } = el;
-                this.toolTipEl.offsetWidth;
+                const { x1, y1, x: x2, y: y2 } = item;
+                const x = x1 || x2;
+                const y = y1 || y2;
+                const { offsetWidth, offsetHeight } = this.elWrap;
                 this.toolTipEl.style.transform = `translate(${x > offsetWidth / 2 ? x - this.toolTipEl.offsetWidth : x + 10}px, ${y > offsetHeight / 2 ? y - this.toolTipEl.offsetHeight : y + 10}px)`;
-                this.toolTipEl.style.opacity = '1';
+                this.toolTipEl.style.visibility = 'visible';
             };
             this.el = options.el;
             this.elMap = new WeakMap();
@@ -649,29 +652,36 @@
     }
 
     const suitLayout = function (instance) {
-        const { elRect, layout, elWrap } = instance;
+        const { elRect, layout, elWrap, value } = instance;
         const realWidth = layout.right - layout.left;
         const realHeight = layout.bottom - layout.top;
         elRect.width / realWidth;
         elRect.height / realHeight;
-        elRect.left - layout.left;
-        elRect.top - layout.top;
-        elRect.right - layout.right;
-        elRect.bottom - layout.bottom;
-        // elWrap.style.transformOrigin = 'center'
+        const x = elRect.left - layout.left;
+        const y = elRect.top - layout.top;
+        const x1 = elRect.right - layout.right;
+        const y1 = elRect.bottom - layout.bottom;
+        elWrap.style.transformOrigin = 'center';
+        const offsetLeft = (x + x1) / 2;
+        const offsetTop = (y + y1) / 2;
+        value.forEach(i => {
+            i.x = (i.x || 0) + offsetLeft;
+            i.y = (i.y || 0) + offsetTop;
+            const { el } = i;
+            el && (el.style.transform = `translate(${i.x}px, ${i.y}px)`);
+        });
         // elWrap.style.transform = `translate(${x / 2}px, ${y / 2}px) scaleX(${widthPer}) scaleY(${heightPer}) `
         // elWrap.style.transform = `translate(${(x + x1) / 2}px, ${(y + y1) / 2}px)`
     };
     const toolTipHandle = function (instance) {
         var _a;
-        const { el, config } = instance;
+        const { el, config, value } = instance;
         if ((_a = config.tooltip) === null || _a === void 0 ? void 0 : _a.show) {
-            el.addEventListener('mousemove', function (e) {
-                const target = e.target;
-                if (target.attributes.getNamedItem('iswordcloudnode')) {
-                    const item = instance.elMap.get(target);
-                    instance.setActive(item, el, e);
-                }
+            value.forEach(i => {
+                const { el } = i;
+                el === null || el === void 0 ? void 0 : el.addEventListener('mouseenter', function (e) {
+                    instance.setActive(i, el, e);
+                });
             });
         }
     };

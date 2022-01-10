@@ -90,14 +90,13 @@ class WordChart implements WordChartBase {
   }
   clearActive = () =>  {
     this.active = undefined
-    this.toolTipEl.style.opacity = '0'
+    this.toolTipEl.style.visibility = 'hidden'
   }
-  setActive = (item: MappingDataItem, el: HTMLElement, e: MouseEvent) => {
+  setActive = (item: MappingDataItem, el: HTMLElement) => {
     this.active = {
       item,
       el
     }
-   
     if(this.config?.tooltip?.render) {
       const context = this.config.tooltip.render(item, this.toolTipEl)
       if(typeof context === 'string') {
@@ -122,7 +121,7 @@ class WordChart implements WordChartBase {
       this.toolTipEl.style.backgroundColor = backgroundColor
       this.toolTipEl.style.borderRadius = borderRadius
       this.toolTipEl.textContent = tooltip?.tooltipEditor || `${item.name}: ${item.value}`
-      // tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
+      tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
       this.toolTipEl.style.backgroundSize = '100% 100%'
       this.toolTipEl.style.color = color
       this.toolTipEl.style.fontFamily = fontFamily
@@ -131,11 +130,13 @@ class WordChart implements WordChartBase {
       width && (this.toolTipEl.style.width = width + 'px')
       height && (this.toolTipEl.style.height = height + 'px')
     }
-    const { x, y  } = item
-    const { offsetWidth, offsetHeight } = el
-    const elRect = this.toolTipEl.offsetWidth
+    const { x1, y1, x: x2, y: y2  } = item
+    const x = x1 || x2
+    const y = y1 || y2
+    const { offsetWidth, offsetHeight } = this.elWrap
+
     this.toolTipEl.style.transform = `translate(${x > offsetWidth / 2 ? x - this.toolTipEl.offsetWidth  : x + 10}px, ${y > offsetHeight / 2  ? y - this.toolTipEl.offsetHeight : y + 10}px)`
-    this.toolTipEl.style.opacity = '1'
+    this.toolTipEl.style.visibility = 'visible'
   }
   animate(fn: (_: OptionData) => void, ms: number = 20):WordChart {
     const that = this
