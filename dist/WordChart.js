@@ -14,10 +14,10 @@ class WordChart {
     constructor(options) {
         this.clearActive = () => {
             this.active = undefined;
-            this.toolTipEl.style.opacity = '0';
+            this.toolTipEl.style.visibility = 'hidden';
         };
-        this.setActive = (item, el, e) => {
-            var _a, _b, _c, _d;
+        this.setActive = (item, el) => {
+            var _a, _b, _c, _d, _e, _f;
             this.active = {
                 item,
                 el
@@ -49,7 +49,7 @@ class WordChart {
                 this.toolTipEl.style.backgroundColor = backgroundColor;
                 this.toolTipEl.style.borderRadius = borderRadius;
                 this.toolTipEl.textContent = (tooltip === null || tooltip === void 0 ? void 0 : tooltip.tooltipEditor) || `${item.name}: ${item.value}`;
-                // tooltip?.bgStyle?.url && (this.toolTipEl.style.background = `url(${tooltip?.bgStyle?.url})`)
+                ((_e = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _e === void 0 ? void 0 : _e.url) && (this.toolTipEl.style.background = `url(${(_f = tooltip === null || tooltip === void 0 ? void 0 : tooltip.bgStyle) === null || _f === void 0 ? void 0 : _f.url})`);
                 this.toolTipEl.style.backgroundSize = '100% 100%';
                 this.toolTipEl.style.color = color;
                 this.toolTipEl.style.fontFamily = fontFamily;
@@ -58,11 +58,12 @@ class WordChart {
                 width && (this.toolTipEl.style.width = width + 'px');
                 height && (this.toolTipEl.style.height = height + 'px');
             }
-            const { x, y } = item;
-            const { offsetWidth, offsetHeight } = el;
-            const elRect = this.toolTipEl.offsetWidth;
+            const { x1, y1, x: x2, y: y2 } = item;
+            const x = x1 || x2;
+            const y = y1 || y2;
+            const { offsetWidth, offsetHeight } = this.elWrap;
             this.toolTipEl.style.transform = `translate(${x > offsetWidth / 2 ? x - this.toolTipEl.offsetWidth : x + 10}px, ${y > offsetHeight / 2 ? y - this.toolTipEl.offsetHeight : y + 10}px)`;
-            this.toolTipEl.style.opacity = '1';
+            this.toolTipEl.style.visibility = 'visible';
         };
         this.el = options.el;
         this.elMap = new WeakMap();

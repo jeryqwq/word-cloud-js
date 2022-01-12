@@ -39,7 +39,8 @@ export const findLocation =  function (_: ScanParams): Promise<MappingDataItem> 
     return new Promise((resolve, reject) => {
       let i = prevIndex
       void function scheduler () {
-        requestIdleCallback(() => {
+        // 优先requestIdleCallback， 其次使用requestAnimationFrame
+        (requestIdleCallback || requestAnimationFrame)(() => {
           instance.elWrap.appendChild(el)
           const [x, y] = instance.getSpiral(++i * 5)
           const left = x + width / 2

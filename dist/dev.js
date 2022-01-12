@@ -273,7 +273,8 @@
             return new Promise((resolve, reject) => {
                 let i = prevIndex;
                 void function scheduler() {
-                    requestIdleCallback(() => {
+                    // 优先requestIdleCallback， 其次使用requestAnimationFrame
+                    (requestIdleCallback || requestAnimationFrame)(() => {
                         instance.elWrap.appendChild(el);
                         const [x, y] = instance.getSpiral(++i * 5);
                         const left = x + width / 2;
@@ -766,7 +767,7 @@
 
     const temp = [];
     const words = ['这根本就不好玩', '再见', 'MDML在线测试', '深入浅出CSS3', 'React测试', '这就是个文字内容', '高刷屏', '默认触发间隔', '假如我说假如', '发现越来越多的美好', '小惊喜', '不会只有我', '哦次打次', '客气客气'];
-    for (let index = 0; index < 40; index++) {
+    for (let index = 0; index < 50; index++) {
         const item = words[index];
         temp.push({
             value: Math.floor(Math.random() * 100),
